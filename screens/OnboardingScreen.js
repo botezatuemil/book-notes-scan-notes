@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
   Animated,
+  ScrollView,
 } from "react-native";
 
 import { StatusBar } from "expo-status-bar";
@@ -22,6 +23,7 @@ import AppLoading from "expo-app-loading";
 import { useFonts } from "expo-font";
 import slides from "../utils/slides";
 import OnboardingItem from "../components/OnboardingItem";
+import Paginator from "../components/Paginator";
 
 const OnboardingScreen = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -43,6 +45,7 @@ const OnboardingScreen = () => {
 
   return (
     <View style={styles.container}>
+     <ScrollView scrollEnabled={false}>
      <View style={{flex: 3}}>
      <FlatList
         data={slides}
@@ -60,6 +63,8 @@ const OnboardingScreen = () => {
         ref={slidesRef}
       />
      </View>
+        <Paginator data={slides} scrollX={scrollX} />       
+     </ScrollView>
     </View>
   );
 };

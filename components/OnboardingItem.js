@@ -29,7 +29,7 @@ const OnboardingItem = ({item}) => {
             <View style={{backgroundColor: item.color}}>
                 <Text style={styles.title}>{item.title}</Text>
                 <Text style={styles.subtitles}>{item.subtitles}</Text>
-            </View>
+            </View> 
         </View>
     )
 }
@@ -38,7 +38,7 @@ export default OnboardingItem
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1, 
     },
     image: {
         width: windowWidth,
