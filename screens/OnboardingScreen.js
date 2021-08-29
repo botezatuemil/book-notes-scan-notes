@@ -27,10 +27,12 @@ import Paginator from "../components/Paginator";
 import Footer from "../components/Footer";
 import DoneButton from "../components/DoneButton";
 
-const OnboardingScreen = () => {
+
+const OnboardingScreen = ({navigation}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollX = useRef(new Animated.Value(0)).current;
   const slidesRef = useRef(null);
+
   const viewableItemsChanged = useRef(({ viewableItems }) => {
     setCurrentIndex(viewableItems[0].index);
   }).current;
@@ -48,7 +50,7 @@ const OnboardingScreen = () => {
   const Buttons = () => {
     if (currentIndex < slides.length - 1) {
       return (
-        <Footer scrollTo={scrollTo}/>
+        <Footer scrollTo={scrollTo} />
       );
     } else return <DoneButton/>;
   };
@@ -83,6 +85,7 @@ const OnboardingScreen = () => {
               }
             )}
             onViewableItemsChanged={viewableItemsChanged}
+            viewabilityConfig={viewConfig}
             ref={slidesRef}
           />
         </View>

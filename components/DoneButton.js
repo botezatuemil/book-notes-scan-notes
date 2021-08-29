@@ -10,11 +10,12 @@ import {
   DMSans_500Medium,
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
+import { useNavigation } from '@react-navigation/native';
 
-import HomeScreen from '../screens/HomeScreen';
 
+const DoneButton = () => {
+  const navigation = useNavigation();
 
-const DoneButton = ({navigation}) => {
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -26,7 +27,7 @@ const DoneButton = ({navigation}) => {
   }
 
   return (
-    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('HomeScreen')}>
+    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('AppStack')}>
       <Text style={styles.text}>Get Started</Text>
     </TouchableOpacity>
   );

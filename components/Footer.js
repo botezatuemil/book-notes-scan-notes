@@ -13,10 +13,10 @@ import {
 
 import slides from "../utils/slides";
 import Svg, { Path } from "react-native-svg";
-import HomeScreen from "../screens/HomeScreen";
+import { useNavigation } from '@react-navigation/native';
 
-const Footer = ({navigation, scrollTo, props}) => {
-
+const Footer = ({scrollTo, props}) => {
+  const navigation = useNavigation();
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -29,7 +29,7 @@ const Footer = ({navigation, scrollTo, props}) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.containerSkip} onPress={() => navigation.navigate('HomeScreen')}>
+      <TouchableOpacity style={styles.containerSkip} onPress={() => navigation.navigate('AppStack')}>
         <Text style={styles.skip}>Skip</Text>
       </TouchableOpacity>
 
