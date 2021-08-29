@@ -25,6 +25,7 @@ import slides from "../utils/slides";
 import OnboardingItem from "../components/OnboardingItem";
 import Paginator from "../components/Paginator";
 import Footer from "../components/Footer";
+import DoneButton from "../components/DoneButton";
 
 const OnboardingScreen = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -36,12 +37,20 @@ const OnboardingScreen = () => {
 
   const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
-  const Skip = () => {
-    return (
-      <TouchableOpacity>
-        <Text style={styles.skip}>Skip</Text>
-      </TouchableOpacity>
-    );
+  const scrollTo = () => {
+    if (currentIndex < slides.length - 1) {
+      slidesRef.current.scrollToIndex({ index: currentIndex + 1 });
+    } else {
+      console.log("last item");
+    }
+  };
+
+  const Buttons = () => {
+    if (currentIndex < slides.length - 1) {
+      return (
+        <Footer scrollTo={scrollTo}/>
+      );
+    } else return <DoneButton/>;
   };
 
   let [fontsLoaded, error] = useFonts({
@@ -78,7 +87,7 @@ const OnboardingScreen = () => {
           />
         </View>
         <Paginator data={slides} scrollX={scrollX} />
-        <Footer data={slides}/>
+        <Buttons />
       </ScrollView>
     </View>
   );
@@ -93,7 +102,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   skip: {
-    fontFamily: 'DMSans_500Medium',
+    fontFamily: "DMSans_500Medium",
     color: "black",
     fontSize: 14,
     top: -windowHeight / 7,
