@@ -37,7 +37,8 @@ export default DoneButton;
 
 const styles = StyleSheet.create({
   container: {
-    top: -windowHeight / 6,
+    //top: -windowHeight / 6,
+    top: -150,
     backgroundColor: '#282536',
     alignItems: 'center',
     height: 41,
