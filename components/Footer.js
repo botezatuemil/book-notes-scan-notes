@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
 import { windowHeight, windowWidth } from "../utils/Dimensions";
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 import AppLoading from "expo-app-loading";
 import { useFonts } from "expo-font";
@@ -63,14 +64,13 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    //flex: 1,
   },
   containerSkip: {
-    top: -windowHeight / 7,
+    top: -verticalScale(170),
     marginLeft: 36,
   },
   containerNext: {
-    top: -windowHeight / 7,
+    top: -verticalScale(170),
     alignSelf: "flex-end",
     marginRight: 36,
     flexDirection: 'row',
@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   skip: {
+   
     fontFamily: "DMSans_500Medium",
     color: "black",
     fontSize: 14,

@@ -13,8 +13,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <StatusBar/>
-      <OnboardingScreen/>
-      {/* <AuthStack/> */}
+      <AuthStack/>
     </NavigationContainer>
   );
 }

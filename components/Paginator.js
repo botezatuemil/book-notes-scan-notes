@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, Text, View, Animated } from 'react-native'
 
 import { windowHeight, windowWidth } from "../utils/Dimensions";
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 const Paginator = ({data, scrollX}) => {
     return (
@@ -32,7 +33,7 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         height: 10,
-        top: -windowHeight / 5,
+        top: -verticalScale(240),
         alignSelf: 'center',
     },
     dot: {

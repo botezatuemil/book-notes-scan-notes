@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { windowHeight, windowWidth } from "../utils/Dimensions";
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 import AppLoading from "expo-app-loading";
 import { useFonts } from "expo-font";
@@ -37,8 +38,8 @@ export default DoneButton;
 
 const styles = StyleSheet.create({
   container: {
-    //top: -windowHeight / 6,
-    top: -150,
+    flex: 1,
+    top: -scale(200),
     backgroundColor: '#282536',
     alignItems: 'center',
     height: 41,
@@ -50,6 +51,6 @@ const styles = StyleSheet.create({
       fontFamily: 'DMSans_700Bold',
       fontSize: 16,
       color: '#fff',
-      top: 8,
+      top: scale(8),
    }
 });

@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, Text, View, Image } from 'react-native'
 import slides from '../utils/slides'
 import { windowHeight, windowWidth } from "../utils/Dimensions";
+import { scale, verticalScale, moderateScale } from 'react-native-size-matters';
 
 import AppLoading from "expo-app-loading";
 import { useFonts } from "expo-font";
@@ -48,12 +49,12 @@ const styles = StyleSheet.create({
         fontFamily: 'DMSans_700Bold',
         textAlign: 'center',
         fontSize: 20,
-        top: -windowHeight / 3
+        top: -verticalScale(300)
     },
     subtitles: {
         fontFamily: 'DMSans_500Medium',
         textAlign: 'center',
         fontSize: 12,
-        top: -windowHeight / 3.5
+        top: -verticalScale(276)
     }
 })
