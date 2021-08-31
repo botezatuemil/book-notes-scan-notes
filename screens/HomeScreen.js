@@ -23,6 +23,8 @@ import {
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 
+import Book from "../components/Book";
+
 const HomeScreen = ({ navigation }) => {
   const SearchBar = ({ props }) => {
     return (
@@ -69,29 +71,38 @@ const HomeScreen = ({ navigation }) => {
     return <AppLoading />;
   }
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ flex: 1 }}>
-      <Text style={styles.header}>Your</Text>
-      <Text style={styles.headerBold}>Bookshelf</Text>
-      <SearchBar />
+    
+    <ScrollView style={styles.container} contentContainerStyle={{ flexGrow:1, }}>
 
-      <Image
-        source={require("../assets/screen/books.png")}
-        style={styles.image}
-      />
-      <View style={styles.headerReading}>
-        <Text style={styles.headerReadingLeft}>You're reading</Text>
-        <TouchableOpacity>
-          <Text style={styles.headerReadingRight}>See all</Text>
-        </TouchableOpacity>
-      </View>
+        <Text style={styles.header}>Your</Text>
+        <Text style={styles.headerBold}>Bookshelf</Text>
+        <SearchBar />
+
+        <Image
+          source={require("../assets/screen/books.png")}
+          style={styles.image}
+        />
+        <View style={styles.headerReading}>
+          <Text style={styles.headerReadingLeft}>You're reading</Text>
+          <TouchableOpacity>
+            <Text style={styles.headerReadingRight}>See all</Text>
+          </TouchableOpacity>
+
+        </View>
+        <Book/>  
     </ScrollView>
+   
   );
 };
 
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    //height: 800,
+    //width: 200,
+    //flex: 1
+  },
   header: {
     fontFamily: "DMSans_500Medium",
     fontSize: 24,
