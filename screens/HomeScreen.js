@@ -8,12 +8,12 @@ import {
   Image,
   SafeAreaView,
   TextInput,
-  TouchableOpacityBase,
+  FlatList,
 } from "react-native";
 
 import { windowHeight, windowWidth } from "../utils/Dimensions";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
-import Svg, { Path } from "react-native-svg";
+import Svg, { Path, Rect } from "react-native-svg";
 
 import AppLoading from "expo-app-loading";
 import { useFonts } from "expo-font";
@@ -24,6 +24,7 @@ import {
 } from "@expo-google-fonts/dm-sans";
 
 import Book from "../components/Book";
+import images from "../utils/images";
 
 const HomeScreen = ({ navigation }) => {
   const SearchBar = ({ props }) => {
@@ -61,6 +62,45 @@ const HomeScreen = ({ navigation }) => {
     );
   };
 
+  const AddBookButton = ({ props }) => {
+    return (
+      <View style={styles.book}>
+        <View style={styles.bookIcon}>
+          <Svg
+            width={44}
+            height={44}
+            viewBox="0 0 44 44"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            {...props}
+          >
+            <Path
+              d="M8.25 38.5a4.125 4.125 0 014.125-4.125H35.75V5.5H12.375A4.125 4.125 0 008.25 9.625V38.5zM8.25 38.5v1.375H33"
+              stroke="#000"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <Rect x={21} y={15} width={3} height={13} rx={1.5} fill="#000" />
+            <Rect
+              x={29}
+              y={20}
+              width={3}
+              height={13}
+              rx={1.5}
+              transform="rotate(90 29 20)"
+              fill="#000"
+            />
+          </Svg>
+        </View>
+
+        <TouchableOpacity style={styles.addBook}>
+          <Text style={styles.addBookText}>ADD BOOK</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -71,27 +111,37 @@ const HomeScreen = ({ navigation }) => {
     return <AppLoading />;
   }
   return (
-    
-    <ScrollView style={styles.container} contentContainerStyle={{ flexGrow:1, }}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ flexGrow: 1 }}
+    >
+      <Text style={styles.header}>Your</Text>
+      <Text style={styles.headerBold}>Bookshelf</Text>
+      <SearchBar />
 
-        <Text style={styles.header}>Your</Text>
-        <Text style={styles.headerBold}>Bookshelf</Text>
-        <SearchBar />
+      <Image
+        source={require("../assets/screen/books.png")}
+        style={styles.image}
+      />
+      <View style={styles.headerReading}>
+        <Text style={styles.headerReadingLeft}>You're reading</Text>
+        <TouchableOpacity>
+          <Text style={styles.headerReadingRight}>See all</Text>
+        </TouchableOpacity>
+      </View>
 
-        <Image
-          source={require("../assets/screen/books.png")}
-          style={styles.image}
+      <View style={{ width: scale(230), height: verticalScale(300) }}>
+        <FlatList
+          contentContainerStyle={{ marginLeft: 8 }}
+          data={images}
+          renderItem={({ item }) => <Book item={item} />}
+          keyExtractor={(item) => item.id}
+          showsHorizontalScrollIndicator={false}
+          horizontal
         />
-        <View style={styles.headerReading}>
-          <Text style={styles.headerReadingLeft}>You're reading</Text>
-          <TouchableOpacity>
-            <Text style={styles.headerReadingRight}>See all</Text>
-          </TouchableOpacity>
-
-        </View>
-        <Book/>  
+      </View>
+      <AddBookButton />
     </ScrollView>
-   
   );
 };
 
@@ -133,9 +183,9 @@ const styles = StyleSheet.create({
     top: 138,
   },
   headerReading: {
-    flexDirection: 'row',
+    flexDirection: "row",
     top: 154,
-    justifyContent: 'space-between'
+    justifyContent: "space-between",
   },
   headerReadingLeft: {
     fontFamily: "DMSans_700Bold",
@@ -145,8 +195,36 @@ const styles = StyleSheet.create({
   headerReadingRight: {
     fontFamily: "DMSans_700Bold",
     fontSize: 14,
-    alignSelf:"flex-end",
+    alignSelf: "flex-end",
     marginRight: 32,
-    top:4
+    top: 4,
+  },
+  book: {
+    width: scale(86),
+    height: verticalScale(123),
+    borderRadius: 4,
+    backgroundColor: "#C4C4C4",
+    top: -verticalScale(152),
+    marginLeft: 290,
+  },
+  bookIcon: {
+    top: 33,
+    alignSelf: "center",
+  },
+  addBook: {
+    top: 41,
+    backgroundColor: '#282536',
+    width: scale(67),
+    height: verticalScale(20),
+    borderRadius: 3,
+    justifyContent: 'center',
+    alignSelf: 'center'
+  },
+  addBookText: {
+    fontSize: 8,
+    fontFamily: "DMSans_700Bold",
+    color: '#fff',
+    alignSelf: 'center'
+
   }
 });
