@@ -9,6 +9,7 @@ import AppStack from './navigation/AppStack';
 import { createStackNavigator } from '@react-navigation/stack';
 import OnboardingScreen from './screens/OnboardingScreen';
 
+
 export default function App() {
   return (
     <NavigationContainer>

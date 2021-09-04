@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -25,8 +25,13 @@ import {
 
 import Book from "../components/Book";
 import images from "../utils/images";
+import AddButton from "../components/AddButton";
+import ModalComponent from "../components/ModalComponent";
 
 const HomeScreen = ({ navigation }) => {
+  
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const SearchBar = ({ props }) => {
     return (
       <View style={styles.search}>
@@ -62,7 +67,12 @@ const HomeScreen = ({ navigation }) => {
     );
   };
 
+  const toggleModal = () => {
+      setIsModalVisible(!isModalVisible);
+  };
+
   const AddBookButton = ({ props }) => {
+    
     return (
       <View style={styles.book}>
         <View style={styles.bookIcon}>
@@ -93,10 +103,10 @@ const HomeScreen = ({ navigation }) => {
             />
           </Svg>
         </View>
-
-        <TouchableOpacity style={styles.addBook}>
-          <Text style={styles.addBookText}>ADD BOOK</Text>
-        </TouchableOpacity>
+        <AddButton
+          title="ADD BOOK"
+          toggleModal={toggleModal}
+        />
       </View>
     );
   };
@@ -134,13 +144,21 @@ const HomeScreen = ({ navigation }) => {
         <FlatList
           contentContainerStyle={{ marginLeft: 8 }}
           data={images}
-          renderItem={({ item }) => <Book item={item} />}
+          renderItem={({ item }) => <Book item={item} navigation={navigation} />}
           keyExtractor={(item) => item.id}
           showsHorizontalScrollIndicator={false}
           horizontal
         />
       </View>
       <AddBookButton />
+      <ModalComponent 
+        isModalVisible={isModalVisible} 
+        toggleModal={toggleModal} 
+        title="Create a book"
+        author="Author"
+        save="Create"
+        navigation={navigation}
+      />
     </ScrollView>
   );
 };
@@ -211,20 +229,4 @@ const styles = StyleSheet.create({
     top: 33,
     alignSelf: "center",
   },
-  addBook: {
-    top: 41,
-    backgroundColor: '#282536',
-    width: scale(67),
-    height: verticalScale(20),
-    borderRadius: 3,
-    justifyContent: 'center',
-    alignSelf: 'center'
-  },
-  addBookText: {
-    fontSize: 8,
-    fontFamily: "DMSans_700Bold",
-    color: '#fff',
-    alignSelf: 'center'
-
-  }
 });

@@ -1,14 +1,17 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-const AddBookScreen = () => {
+
+const AddBookScreen = ({navigation}) => {
     return (
-        <View>
+        <TouchableOpacity style={{top: 200}} onPress={() => {navigation.goBack(null)} }>
             <Text>add book screen</Text>
-        </View>
+        </TouchableOpacity>
     )
 }
 
 export default AddBookScreen
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    
+})

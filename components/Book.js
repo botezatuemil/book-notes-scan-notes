@@ -16,7 +16,7 @@ import {
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 
-const Book = ({item}) => {
+const Book = ({navigation, item}) => {
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -30,7 +30,7 @@ const Book = ({item}) => {
   return (
     <View style={styles.container}>
       {item.image != null ? (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('AddBookScreen')}>
         <Image
           source={item.image}
           style={styles.image}

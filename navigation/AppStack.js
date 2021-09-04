@@ -3,8 +3,8 @@ import { StyleSheet, Text, View, Image } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
 import { createStackNavigator } from "@react-navigation/stack";
+//import createNativeStackNavigator from 'react-native-screens/createNativeStackNavigator';
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-
 import HomeScreen from "../screens/HomeScreen";
 import Favorite from "../screens/FavoriteScreen";
 import Settings from "../screens/SettingsScreen";
@@ -31,7 +31,13 @@ const HomeStack = ({ navigation }) => {
           headerShown: false,
         }}
       />
-      <Stack.Screen name="AddBookScreen" component={AddBookScreen} />
+      <Stack.Screen
+        name="AddBookScreen"
+        component={AddBookScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 };
@@ -65,12 +71,11 @@ const AppStack = () => {
 
   return (
     <Tab.Navigator
-
       barStyle={{
         //position: 'absolute',
         backgroundColor: "#191822",
         height: 56,
-        overflow: 'hidden',
+        overflow: "hidden",
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16,
       }}
@@ -85,7 +90,7 @@ const AppStack = () => {
             const color = focused ? "#fff" : "#A4A4A4";
             return (
               <Svg
-                style={{top: 2}}
+                style={{ top: 2 }}
                 width={15}
                 height={16}
                 viewBox="0 0 14 15"
@@ -112,7 +117,7 @@ const AppStack = () => {
             const color = focused ? "#fff" : "#A4A4A4";
             return (
               <Svg
-                style={{top: 2}}
+                style={{ top: 2 }}
                 width={12}
                 height={16}
                 viewBox="0 0 12 16"
@@ -167,6 +172,5 @@ const styles = StyleSheet.create({
   homeText: {
     fontFamily: "DMSans_500Medium",
     fontSize: 10,
-    
   },
 });
