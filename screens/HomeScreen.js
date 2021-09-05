@@ -124,6 +124,7 @@ const HomeScreen = ({ navigation }) => {
     <ScrollView
       style={styles.container}
       contentContainerStyle={{ flexGrow: 1 }}
+      keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag"
     >
       <Text style={styles.header}>Your</Text>
       <Text style={styles.headerBold}>Bookshelf</Text>
@@ -149,6 +150,7 @@ const HomeScreen = ({ navigation }) => {
           keyExtractor={(item) => item.id}
           showsHorizontalScrollIndicator={false}
           horizontal
+          removeClippedSubviews={false}
         />
       </View>
       <AddBookButton />
@@ -160,6 +162,7 @@ const HomeScreen = ({ navigation }) => {
         author="Author"
         save="Create"
         navigation={navigation}
+        chapters="Chapters"
       />
      
     </ScrollView>

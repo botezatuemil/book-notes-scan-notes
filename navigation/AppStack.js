@@ -22,6 +22,7 @@ import {
 } from "@expo-google-fonts/dm-sans";
 
 const HomeStack = ({ navigation }) => {
+  
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -34,9 +35,10 @@ const HomeStack = ({ navigation }) => {
       <Stack.Screen
         name="AddBookScreen"
         component={AddBookScreen}
-        options={{
+        options={route => ({
           headerShown: false,
-        }}
+          //tabBarVisible: route.state && route.state.index === 0
+        })}
       />
     </Stack.Navigator>
   );
@@ -59,6 +61,19 @@ const SettingsStack = () => {
 };
 
 const AppStack = () => {
+
+  const getTabBarVisibility = (route) => {
+    const routeName = route.state
+      ? route.state.routes[route.state.index].name
+      : '';
+  
+    if (routeName === 'AddBookScreen') {
+      return false;
+    }
+  
+    return true;
+  }
+
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -83,7 +98,8 @@ const AppStack = () => {
       <Tab.Screen
         name="Home"
         component={HomeStack}
-        options={{
+        options={({route}) => ({
+          tabBarVisibilty: getTabBarVisibility(route),
           tabBarLabel: <Text style={styles.homeText}>Home</Text>,
           headerShown: false,
           tabBarIcon: ({ props, focused }) => {
@@ -105,12 +121,13 @@ const AppStack = () => {
               </Svg>
             );
           },
-        }}
+        })}
       />
       <Tab.Screen
         name="Favorite"
         component={FavoriteStack}
         options={{
+        
           tabBarLabel: <Text style={styles.homeText}>Favorite</Text>,
           headerShown: false,
           tabBarIcon: ({ props, focused }) => {
