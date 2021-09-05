@@ -1,12 +1,11 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { StyleSheet, Text, TouchableOpacity, TouchableOpacityBase, View } from "react-native";
 import Modal from "react-native-modal";
 import { useNavigation } from '@react-navigation/native';
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
 const ModalComponent = ({navigation, isModalVisible, toggleModal, title, author, save }) => {
-  //const navigation = useNavigation();
-  
+
   return (
     <Modal isVisible={isModalVisible}>
       <View style={styles.container}>
@@ -17,7 +16,7 @@ const ModalComponent = ({navigation, isModalVisible, toggleModal, title, author,
             <Text>Cancel</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => {toggleModal;  navigation.navigate('AddBookScreen'); console.log(isModalVisible)}}>
+          <TouchableOpacity onPress={() => {navigation.navigate("AddBookScreen"); toggleModal()}}>
             <Text>{save}</Text>
           </TouchableOpacity>
         </View>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -70,9 +70,8 @@ const HomeScreen = ({ navigation }) => {
   const toggleModal = () => {
       setIsModalVisible(!isModalVisible);
   };
-
+ 
   const AddBookButton = ({ props }) => {
-    
     return (
       <View style={styles.book}>
         <View style={styles.bookIcon}>
@@ -120,6 +119,7 @@ const HomeScreen = ({ navigation }) => {
   if (!fontsLoaded) {
     return <AppLoading />;
   }
+  console.log(isModalVisible);
   return (
     <ScrollView
       style={styles.container}
@@ -140,9 +140,10 @@ const HomeScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <View style={{ width: scale(230), height: verticalScale(300) }}>
+    <View style={{flexDirection: 'row'}}>
+      <View style={{ width: scale(230), height: verticalScale(320) }}>
         <FlatList
-          contentContainerStyle={{ marginLeft: 8 }}
+          contentContainerStyle={{ marginLeft: 8,  }}
           data={images}
           renderItem={({ item }) => <Book item={item} navigation={navigation} />}
           keyExtractor={(item) => item.id}
@@ -151,6 +152,7 @@ const HomeScreen = ({ navigation }) => {
         />
       </View>
       <AddBookButton />
+      </View>
       <ModalComponent 
         isModalVisible={isModalVisible} 
         toggleModal={toggleModal} 
@@ -159,9 +161,11 @@ const HomeScreen = ({ navigation }) => {
         save="Create"
         navigation={navigation}
       />
+     
     </ScrollView>
   );
 };
+
 
 export default HomeScreen;
 
@@ -222,8 +226,8 @@ const styles = StyleSheet.create({
     height: verticalScale(123),
     borderRadius: 4,
     backgroundColor: "#C4C4C4",
-    top: -verticalScale(152),
-    marginLeft: 290,
+    top: 178,
+    marginLeft: 20
   },
   bookIcon: {
     top: 33,

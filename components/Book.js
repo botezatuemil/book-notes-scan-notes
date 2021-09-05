@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
   container: {
     top: 178,
     marginLeft: 24,
+    height: 200
   },
   image: {
     width: scale(86),
