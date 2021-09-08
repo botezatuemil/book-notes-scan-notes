@@ -119,7 +119,7 @@ const HomeScreen = ({ navigation }) => {
   if (!fontsLoaded) {
     return <AppLoading />;
   }
-  console.log(isModalVisible);
+ 
   return (
     <ScrollView
       style={styles.container}

@@ -40,7 +40,7 @@ const Book = ({navigation, item}) => {
           <View style={[styles.image, {backgroundColor: '#C4C4C4', }]}>
             <TouchableOpacity>
               
-            </TouchableOpacity>
+            </TouchableOpacity> 
           </View>
       )
      }
