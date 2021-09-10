@@ -43,7 +43,7 @@ const ModalChapter = ({ isModalChapterVisible, toggleModalChapter, title, setTit
           />
         </View>
 
-        <TouchableOpacity style={styles.save} onPress={() => {toggleModalChapter(); handleAddchapter(); setCounter((counter+1).toString())}}>
+        <TouchableOpacity style={styles.save} onPress={() => {toggleModalChapter(); handleAddchapter(); }}>
           <Text style={styles.textSave}>Create</Text>
         </TouchableOpacity>
 

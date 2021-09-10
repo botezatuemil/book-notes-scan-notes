@@ -22,7 +22,7 @@ import {
 import Chapter from "../components/Chapter";
 import chapters from "../utils/chapters";
 import ModalChapter from "../components/ModalChapter";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Cover = ({ props }) => {
   return (
@@ -68,9 +68,9 @@ const UtilityButtons = ({ title, buttonEdit, deleteBook }) => {
   );
 };
 
-const DeleteButton = ({ props }) => {
+const DeleteButton = ({ props, clear }) => {
   return (
-    <TouchableOpacity style={styles.delete}>
+    <TouchableOpacity style={styles.delete} onPress={clear}>
       <View style={{  flexDirection: 'row', alignSelf: 'center' }}>
         <Svg
           width={18}
@@ -124,50 +124,34 @@ const AddChapter = ({props, toggleModalChapter})=> {
 const AddBookScreen = ({ navigation }) => {
   const [title, setTitle] = useState("");
   const [isModalChapterVisible, setIsModalChapterVisible] = useState(false);
-  const [initialChapters, setInitialChapters] = useState([
-    {
-        id: '1',
-        name: 'Chapter 1 - How to win friends and influence people'
-    },
-    {
-        id: '2',
-        name: 'Chapter 2 - What to do when you are down'
-    },
-    {
-        id: '3',
-        name: 'Chapter 2 - What to do when you are down'
-    },
-    {
-        id: '4',
-        name: 'Chapter 2 - What to do when you are down'
-    },
-    {
-        id: '5',
-        name: 'Chapter 2 - What to do when you are down'
-    },
-    {
-        id: '6',
-        name: 'Chapter 2 - What to do when you are down'
-    },
-    {
-        id: '7',
-        name: 'Chapter 2 - What to do when you are down'
-    },
-    {
-        id: '8',
-        name: 'Chapter 2 - What to do when you are down'
-    }
-  ])
-
-  const [counter, setCounter] = useState('9');
-
+  const [initialChapters, setInitialChapters] = useState(chapters);
+  //const [newChapters, setNewChapters] = useState(initialChapters);
+  const [ready, setReady] = useState(false)
+  
   const toggleModalChapter = () => {
     setIsModalChapterVisible(!isModalChapterVisible);
   }
+
   const handleAddchapter = () => {
-   
-    setInitialChapters([...initialChapters, {"name": title, "id": counter}]);
-    setTitle(null);
+    const newTodos = [...initialChapters, {"name": title, "id": `${(initialChapters[initialChapters.length - 1] && parseInt(initialChapters[initialChapters.length - 1].id) + 1) || 1}`}];
+    AsyncStorage.setItem("storedChapters", JSON.stringify(newTodos)).then(() => {
+      setInitialChapters(newTodos);
+      setTitle(null);
+    }).catch(error => console.log(error));  
+  }
+
+  const loadChapters = () => {
+    AsyncStorage.getItem("storedChapters").then(data => {
+      if (data != null) {
+        setInitialChapters(JSON.parse(data))
+      }
+    }).catch((error) => console.log(error));
+  }
+
+  const clear = () => {
+    AsyncStorage.setItem("storedChapters", JSON.stringify([])).then(() => {
+        setInitialChapters([])
+    }).catch((error) => console.log(error));
   }
 
   let [fontsLoaded, error] = useFonts({
@@ -176,8 +160,14 @@ const AddBookScreen = ({ navigation }) => {
     DMSans_700Bold,
   });
 
-  if (!fontsLoaded) {
-    return <AppLoading />;
+  if (!fontsLoaded && !ready) {
+    return (
+      <AppLoading 
+        startAsync={loadChapters}
+        onFinish={() => setReady(true)}
+        onError={console.warn}
+      />
+    )
   }
 
   return (
@@ -207,11 +197,9 @@ const AddBookScreen = ({ navigation }) => {
         title={title}
         setTitle={setTitle}
         handleAddchapter={handleAddchapter}
-        counter={counter}
-        setCounter={setCounter}
       />
       <View style={styles.footer}>
-        <DeleteButton />
+        <DeleteButton clear={clear} />
         <AddChapter toggleModalChapter={toggleModalChapter} />
       </View>
     </View>
