@@ -17,55 +17,96 @@ import {
   DMSans_500Medium,
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
+import chapters from "../utils/chapters";
 
 const ModalComponent = ({
   navigation,
   isModalVisible,
   toggleModal,
-  title,
-  author,
+  titleModal,
+  form2,
   save,
-  chapters
+  titleBook,
+  setTitleBook,
+  authorBook,
+  setAuthorBook,
+  setColor,
+  handleAddBook,
+  books
 }) => {
 
-  const [textTitle, setTitle] = useState("");
-  const [textAuthor, setAuthor] = useState("");
-  const [textChapter, setChapter] = useState("");
-
-  const [onFocus, setOnFocus] = useState([
-    {id: 1, color: '#D75555', selected: false, borderColor: 'rgba(215, 85, 85, 0.5)'},
-    {id: 2, color: '#F0B57A', selected: false, borderColor: 'rgba(240, 181, 122, 0.5)'},
-    {id: 3, color: '#479B61', selected: false, borderColor: 'rgba(71, 155, 97, 0.5)'},
-    {id: 4, color: '#008880', selected: false, borderColor: 'rgba(0, 136, 128, 0.5)'},
-    {id: 5, color: '#4083A8', selected: false, borderColor: 'rgba(64, 131, 168, 0.5)'},
-    {id: 6, color: '#5250A8', selected: false, borderColor: 'rgba(82, 80, 168, 0.5)'},
-
+  const [onFocusColor, setOnFocusColor] = useState([
+    {
+      id: 1,
+      color: "#D75555",
+      selected: false,
+      borderColor: "rgba(215, 85, 85, 0.5)",
+    },
+    {
+      id: 2,
+      color: "#F0B57A",
+      selected: false,
+      borderColor: "rgba(240, 181, 122, 0.5)",
+    },
+    {
+      id: 3,
+      color: "#479B61",
+      selected: false,
+      borderColor: "rgba(71, 155, 97, 0.5)",
+    },
+    {
+      id: 4,
+      color: "#008880",
+      selected: false,
+      borderColor: "rgba(0, 136, 128, 0.5)",
+    },
+    {
+      id: 5,
+      color: "#4083A8",
+      selected: false,
+      borderColor: "rgba(64, 131, 168, 0.5)",
+    },
+    {
+      id: 6,
+      color: "#5250A8",
+      selected: false,
+      borderColor: "rgba(82, 80, 168, 0.5)",
+    },
   ]);
 
   const onButtonClick = (item) => {
-    let updatedState = onFocus.map((isOnFocusItem) => 
+    let updatedState = onFocusColor.map((isOnFocusItem) => 
       isOnFocusItem.id === item.id
       ? {...isOnFocusItem, selected: true}
       : {...isOnFocusItem, selected: false}
+      
     )
-    setOnFocus(updatedState);
+
+    setOnFocusColor(updatedState);
+
+    updatedState.map((isOnFocusItem) => {
+      if(isOnFocusItem.selected === true) {
+        console.log(isOnFocusItem.color)
+        setColor(isOnFocusItem.color)
+      }
+    })
   }
 
   const ChooseColor = () => {
     return (
       <View style={styles.colorSection}>
         <Text style={styles.textColor}>Color</Text>
-        {onFocus.map((item) => (
+        {onFocusColor.map((item) => (
           <TouchableOpacity key={item.id} onPress={() => onButtonClick(item)} style={[styles.color, {backgroundColor: item.color, borderWidth: item.selected ? 2 : 0, borderColor: item.borderColor,}]}></TouchableOpacity>      
         ))}
       </View>
     )
   }
 
-  const Form = ({textTitle, textAuthor, textChapter, setTitle, setAuthor, setChapter}) => {
-    const [titleValue, setTitleValue] = useState(`${textTitle}`)
-    const [authorValue, setAuthorValue] = useState(`${textAuthor}`)
-    const [chapterValue, setChapterValue] = useState(`${textChapter}`)
+  const Form = ({ form2, titleBook, authorBook, setTitleBook, setAuthorBook}) => {
+    const [titleValue, setTitleValue] = useState(`${titleBook}`)
+    const [authorValue, setAuthorValue] = useState(`${authorBook}`)
+   
     
     return (
       <>
@@ -75,7 +116,7 @@ const ModalComponent = ({
             placeholder="Title"
             defaultValue={titleValue}
             onChangeText={(text) => setTitleValue(text)}
-            onEndEditing={() => setTitle(titleValue)}
+            onEndEditing={() => setTitleBook(titleValue)}
             
           />
         </View>
@@ -83,25 +124,12 @@ const ModalComponent = ({
         <View style={[styles.form, {top: 76}]}>
           <TextInput
             style={styles.textInput}
-            placeholder={author}
+            placeholder={form2}
             defaultValue={authorValue}
             onChangeText={(text) => {setAuthorValue(text);}} 
-            onEndEditing={() => setAuthor(authorValue)}
-          
+            onEndEditing={() => setAuthorBook(authorValue)}
           />
         </View>
-
-        <View style={[styles.form, {top: 88, width: scale(98), alignSelf:'flex-start', marginLeft: 18}]}>
-          <TextInput
-            style={styles.textInput}
-            placeholder={chapters}
-            keyboardType="number-pad"
-            defaultValue={chapterValue}
-            onChangeText={(text) => setChapterValue(text)}
-            onEndEditing={() => setChapter(chapterValue)}
-          />
-        </View>
-
       </>
     )
   }
@@ -115,18 +143,19 @@ const ModalComponent = ({
   if (!fontsLoaded) {
     return <AppLoading />;
   }
+
   return (
     <Modal isVisible={isModalVisible}>
       <View style={styles.container}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>{titleModal}</Text>
         <ChooseColor />
         <Form 
-          textTitle={textTitle}
-          textAuthor={textAuthor}
-          textChapter={textChapter}
-          setTitle={setTitle}
-          setAuthor={setAuthor}
-          setChapter={setChapter}
+          form2={form2}
+          titleBook={titleBook}
+          authorBook={authorBook}
+          setTitleBook={setTitleBook}
+          setAuthorBook={setAuthorBook}
+         
         />
         <View style={styles.footer}>
           <TouchableOpacity style={styles.cancel} onPress={toggleModal}>
@@ -135,8 +164,9 @@ const ModalComponent = ({
 
           <TouchableOpacity style={styles.save}
             onPress={() => {
-              navigation.navigate("AddBookScreen");
+              handleAddBook();
               toggleModal();
+              console.log(books)
             }}
           >
             <Text style={styles.textSave}>{save}</Text>
@@ -152,7 +182,7 @@ export default ModalComponent;
 const styles = StyleSheet.create({
   container: {
     width: scale(228),
-    height: verticalScale(271),
+    height: verticalScale(231),
     backgroundColor: "#fff",
     alignSelf: "center",
     borderRadius: 7,
@@ -238,6 +268,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     marginLeft: 12, 
-    fontFamily: 'DMSans_700Bold', 
+    fontFamily: 'DMSans_700Bold',
   }
 });

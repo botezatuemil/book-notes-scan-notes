@@ -28,9 +28,15 @@ import images from "../utils/images";
 import AddButton from "../components/AddButton";
 import ModalComponent from "../components/ModalComponent";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const HomeScreen = ({ navigation }) => {
-  
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [books, setBooks] = useState(images);
+  const [titleBook, setTitleBook] = useState("");
+  const [authorBook, setAuthorBook] = useState("");
+  const [color, setColor] = useState("");
+  const [ready, setReady] = useState(false);
 
   const SearchBar = ({ props }) => {
     return (
@@ -68,9 +74,9 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const toggleModal = () => {
-      setIsModalVisible(!isModalVisible);
+    setIsModalVisible(!isModalVisible);
   };
- 
+
   const AddBookButton = ({ props }) => {
     return (
       <View style={styles.book}>
@@ -102,13 +108,25 @@ const HomeScreen = ({ navigation }) => {
             />
           </Svg>
         </View>
-        <AddButton
-          title="ADD BOOK"
-          toggleModal={toggleModal}
-        />
+        <AddButton title="ADD BOOK" toggleModal={toggleModal} />
       </View>
     );
   };
+
+  const handleAddBook = () => {
+    const newBook = [...books, {"title" : titleBook, "author": authorBook, "color": color, "id": `${(books[books.length - 1] && parseInt(books[books.length - 1].id) + 1) || 1}`, image: null}]
+    AsyncStorage.setItem("storedBooks", JSON.stringify(newBook)).then(() => {
+      setBooks(newBook);
+      setTitleBook("");
+      setAuthorBook("");
+    }).catch(error => console.log(error));
+  };
+
+  const loadBooks = () => {
+    AsyncStorage.getItem("storedBooks").then(data => {
+      setBooks(JSON.parse(data))
+    }).catch(error => console.log(error));
+  }
 
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
@@ -116,15 +134,22 @@ const HomeScreen = ({ navigation }) => {
     DMSans_700Bold,
   });
 
-  if (!fontsLoaded) {
-    return <AppLoading />;
+  if (!fontsLoaded && !ready) {
+    return (
+      <AppLoading 
+        startAsync={loadBooks}
+        onFinish={() => setReady(true)}
+        onError={console.warn}
+      />
+    )
   }
- 
+
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={{ flexGrow: 1 }}
-      keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag"
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
     >
       <Text style={styles.header}>Your</Text>
       <Text style={styles.headerBold}>Bookshelf</Text>
@@ -141,34 +166,41 @@ const HomeScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-    <View style={{flexDirection: 'row'}}>
-      <View style={{ width: scale(230), height: verticalScale(320) }}>
-        <FlatList
-          contentContainerStyle={{ marginLeft: 8,  }}
-          data={images}
-          renderItem={({ item }) => <Book item={item} navigation={navigation} />}
-          keyExtractor={(item) => item.id}
-          showsHorizontalScrollIndicator={false}
-          horizontal
-          removeClippedSubviews={false}
-        />
+      <View style={{ flexDirection: "row" }}>
+        <View style={{ width: scale(230), height: verticalScale(320) }}>
+          <FlatList
+            contentContainerStyle={{ marginLeft: 8 }}
+            data={books}
+            renderItem={({ item }) => (
+              <Book item={item} navigation={navigation} />
+            )}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+            horizontal
+            removeClippedSubviews={false}
+          />
+        </View>
+        <AddBookButton />
       </View>
-      <AddBookButton />
-      </View>
-      <ModalComponent 
-        isModalVisible={isModalVisible} 
-        toggleModal={toggleModal} 
-        title="Create a book"
-        author="Author"
+
+      <ModalComponent
+        isModalVisible={isModalVisible}
+        toggleModal={toggleModal}
+        titleModal="Create a book"
+        form2="Author"
         save="Create"
         navigation={navigation}
-        chapters="Chapters"
+        titleBook={titleBook}
+        setTitleBook={setTitleBook}
+        authorBook={authorBook}
+        setAuthorBook={setAuthorBook}
+        setColor={setColor}
+        handleAddBook={handleAddBook}
+        books={books}
       />
-     
     </ScrollView>
   );
 };
-
 
 export default HomeScreen;
 
@@ -230,7 +262,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: "#C4C4C4",
     top: 178,
-    marginLeft: 20
+    marginLeft: 20,
   },
   bookIcon: {
     top: 33,

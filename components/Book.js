@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
 import AppLoading from "expo-app-loading";
@@ -16,7 +10,7 @@ import {
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 
-const Book = ({navigation, item}) => {
+const Book = ({ navigation, item }) => {
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -30,23 +24,34 @@ const Book = ({navigation, item}) => {
   return (
     <View style={styles.container}>
       {item.image != null ? (
-      <TouchableOpacity onPress={() => navigation.navigate('AddBookScreen')}>
-        <Image
-          source={item.image}
-          style={styles.image}
-        />
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("AddBookScreen", {
+              itemColor: item.color,
+              itemTitle: item.title,
+              itemAuthor: item.author,
+            })
+          }
+        >
+          <Image source={item.image} style={styles.image} />
+        </TouchableOpacity>
       ) : (
-          <View style={[styles.image, {backgroundColor: '#C4C4C4', }]}>
-            <TouchableOpacity>
-              
-            </TouchableOpacity> 
-          </View>
-      )
-     }
+        <TouchableOpacity
+          style={[styles.image, { backgroundColor: "#C4C4C4" }]}
+          onPress={() =>
+            navigation.navigate("AddBookScreen", {
+              itemColor: item.color,
+              itemTitle: item.title,
+              itemAuthor: item.author,
+            })
+          }
+        ></TouchableOpacity>
+      )}
 
       <View style={styles.textContainer}>
-        <Text style={styles.title} numberOfLines={1}>{item.title}</Text>
+        <Text style={styles.title} numberOfLines={1}>
+          {item.title}
+        </Text>
         <Text style={styles.author}>{item.author}</Text>
       </View>
     </View>
@@ -59,15 +64,15 @@ const styles = StyleSheet.create({
   container: {
     top: 178,
     marginLeft: 24,
-    height: 200
+    height: 200,
   },
   image: {
     width: scale(86),
     height: verticalScale(129),
-    borderRadius: 4
+    borderRadius: 4,
   },
   textContainer: {
-    width: 105
+    width: 105,
   },
   title: {
     fontFamily: "DMSans_500Medium",

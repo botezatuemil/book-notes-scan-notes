@@ -121,10 +121,10 @@ const AddChapter = ({props, toggleModalChapter})=> {
   );
 };
 
-const AddBookScreen = ({ navigation }) => {
+const AddBookScreen = ({ navigation, route }) => {
   const [title, setTitle] = useState("");
   const [isModalChapterVisible, setIsModalChapterVisible] = useState(false);
-  const [initialChapters, setInitialChapters] = useState(chapters);
+  const [initialChapters, setInitialChapters] = useState(chapters[0].files);
   //const [newChapters, setNewChapters] = useState(initialChapters);
   const [ready, setReady] = useState(false)
   
@@ -172,10 +172,10 @@ const AddBookScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.background}>
+      <View style={[styles.background, {backgroundColor: route.params.itemColor}]}>
         <Cover />
-        <Text style={styles.title}>Atomic Habits</Text>
-        <Text style={styles.author}>James Clear</Text>
+        <Text style={styles.title}>{route.params.itemTitle}</Text>
+        <Text style={styles.author}>{route.params.itemAuthor}</Text>
         <View style={styles.entireButton}>
           <UtilityButtons title="DELETE BOOK" deleteBook={styles.deleteBook} />
           <View style={styles.separator}></View>
