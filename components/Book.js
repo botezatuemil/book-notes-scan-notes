@@ -10,7 +10,7 @@ import {
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 
-const Book = ({ navigation, item }) => {
+const Book = ({ navigation, item, selectedImage, setSelectedImage, clearBooks, handleAddBook, handleEditBooks, handleTriggerEdit, setBookEdit, bookEdit, handleID }) => {
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -25,26 +25,46 @@ const Book = ({ navigation, item }) => {
     <View style={styles.container}>
       {item.image != null ? (
         <TouchableOpacity
-          onPress={() =>
+          onPress={() => {
             navigation.navigate("AddBookScreen", {
               itemColor: item.color,
               itemTitle: item.title,
               itemAuthor: item.author,
-            })
+              itemImage: item.image,
+              selectedImage: selectedImage,
+              setSelectedImage: setSelectedImage,
+              clearBooks: clearBooks,
+              handleAddBook: handleAddBook,
+              handleEditBooks: handleEditBooks
+            });
+            setBookEdit(item)}
           }
         >
-          <Image source={item.image} style={styles.image} />
+          <Image 
+            source={{uri: item.image}} 
+            style={styles.image} />
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
           style={[styles.image, { backgroundColor: "#C4C4C4" }]}
-          onPress={() =>
+          onPress={() => {
             navigation.navigate("AddBookScreen", {
               itemColor: item.color,
               itemTitle: item.title,
               itemAuthor: item.author,
-            })
+              itemImage: item.image,
+              selectedImage: selectedImage,
+              setSelectedImage: setSelectedImage,
+              clearBooks: clearBooks,
+              handleAddBook: handleAddBook,
+              handleEditBooks: handleEditBooks
+            });
+            //setBookEdit(item);
+            //handleID(item)
+            handleTriggerEdit(item);
           }
+         
+        }
         ></TouchableOpacity>
       )}
 

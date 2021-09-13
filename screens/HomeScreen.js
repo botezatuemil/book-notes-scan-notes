@@ -11,6 +11,8 @@ import {
   FlatList,
 } from "react-native";
 
+import { LogBox } from 'react-native';
+
 import { windowHeight, windowWidth } from "../utils/Dimensions";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import Svg, { Path, Rect } from "react-native-svg";
@@ -30,13 +32,18 @@ import ModalComponent from "../components/ModalComponent";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+//LogBox.ignoreAllLogs();
+
 const HomeScreen = ({ navigation }) => {
+  
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [books, setBooks] = useState(images);
   const [titleBook, setTitleBook] = useState("");
   const [authorBook, setAuthorBook] = useState("");
   const [color, setColor] = useState("");
   const [ready, setReady] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [bookEdit, setBookEdit] = useState(1);
 
   const SearchBar = ({ props }) => {
     return (
@@ -108,17 +115,18 @@ const HomeScreen = ({ navigation }) => {
             />
           </Svg>
         </View>
-        <AddButton title="ADD BOOK" toggleModal={toggleModal} />
+        <AddButton title="ADD BOOK" toggleModal={toggleModal} pickImage={() => {}} handleAddBook={() => {}} handleEditBooks={() => {}}/>
       </View>
     );
   };
 
   const handleAddBook = () => {
-    const newBook = [...books, {"title" : titleBook, "author": authorBook, "color": color, "id": `${(books[books.length - 1] && parseInt(books[books.length - 1].id) + 1) || 1}`, image: null}]
+    const newBook = [...books, {"title" : titleBook, "author": authorBook, "color": color, "id": `${(books[books.length - 1] && parseInt(books[books.length - 1].id) + 1) || 1}`, "image": null}]
     AsyncStorage.setItem("storedBooks", JSON.stringify(newBook)).then(() => {
       setBooks(newBook);
       setTitleBook("");
       setAuthorBook("");
+      setSelectedImage(null);
     }).catch(error => console.log(error));
   };
 
@@ -127,6 +135,39 @@ const HomeScreen = ({ navigation }) => {
       setBooks(JSON.parse(data))
     }).catch(error => console.log(error));
   }
+
+  const clearBooks = () => {
+    AsyncStorage.setItem("storedBooks", JSON.stringify([])).then(() => {
+      setBooks([]);
+    }).catch(error => console.log(error));
+  }
+
+  const handleTriggerEdit = (item) => {
+    setBookEdit(item);
+    console.log(bookEdit.id);
+  }
+
+  const handleID = () => {
+
+  }
+
+  const handleEditBooks = async () => {
+    const newBook = [...books];
+    
+    const bookIndex = books.findIndex((book) => book.id === bookEdit.id);
+    newBook.splice(bookIndex, 1, {"title" : bookEdit.title, "author": bookEdit.author, "color": bookEdit.color, "id": bookEdit.id, "image": selectedImage});
+    //console.log(bookEdit.id);
+    AsyncStorage.setItem("storedBooks", JSON.stringify(newBook)).then(() => {
+      setBooks(newBook);
+      setBookEdit(null);
+      setSelectedImage(null);
+
+    }).catch(error => console.log(error));
+  }
+
+  // useEffect(() => {
+  //   handleEditBooks();
+  // }, [bookEdit])
 
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
@@ -172,12 +213,25 @@ const HomeScreen = ({ navigation }) => {
             contentContainerStyle={{ marginLeft: 8 }}
             data={books}
             renderItem={({ item }) => (
-              <Book item={item} navigation={navigation} />
+              <Book 
+                item={item} 
+                navigation={navigation} 
+                selectedImage={selectedImage} 
+                setSelectedImage={setSelectedImage} 
+                clearBooks={clearBooks} 
+                handleAddBook={handleAddBook}
+                handleEditBooks={handleEditBooks}
+                handleTriggerEdit={handleTriggerEdit}
+                setBookEdit={setBookEdit}
+                bookEdit={bookEdit}
+                handleID={handleID}
+              />
             )}
             keyExtractor={(item) => item.id}
             showsHorizontalScrollIndicator={false}
             horizontal
             removeClippedSubviews={false}
+            
           />
         </View>
         <AddBookButton />

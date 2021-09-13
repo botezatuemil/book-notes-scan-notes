@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, BackHandler } from "react-native";
 
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
@@ -11,7 +11,7 @@ import {
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 
-const AddButton = ({title, toggleModal}) => {
+const AddButton = ({title, pickImage, toggleModal, handleEditBooks}) => {
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -23,7 +23,7 @@ const AddButton = ({title, toggleModal}) => {
   }
 
   return (
-    <TouchableOpacity style={styles.addBook} onPress={toggleModal}>
+    <TouchableOpacity style={styles.addBook} onPress={() => {toggleModal(); pickImage(); handleEditBooks(); }}>
       <Text style={styles.addBookText}>{title}</Text>
     </TouchableOpacity>
   );

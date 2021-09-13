@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image
 } from "react-native";
 import AddButton from "../components/AddButton";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
@@ -22,47 +23,68 @@ import {
 import Chapter from "../components/Chapter";
 import chapters from "../utils/chapters";
 import ModalChapter from "../components/ModalChapter";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Cover = ({ props }) => {
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker';
+
+const Cover = ({ props, route, handleEditBooks }) => {
+  
+
+  let openImagePickerAsync = async () => {
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    let pickerResult = await ImagePicker.launchImageLibraryAsync();
+    //console.log(pickerResult);
+
+    if (pickerResult.cancelled === true) {
+        return;
+    }
+    route.params.setSelectedImage(pickerResult.uri);
+  }  
+
   return (
     <View style={styles.book}>
-      <View style={styles.bookIcon}>
-        <Svg
-          width={44}
-          height={44}
-          viewBox="0 0 44 44"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          {...props}
-        >
-          <Path
-            d="M8.25 38.5a4.125 4.125 0 014.125-4.125H35.75V5.5H12.375A4.125 4.125 0 008.25 9.625V38.5zM8.25 38.5v1.375H33"
-            stroke="#000"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <Rect x={21} y={15} width={3} height={13} rx={1.5} fill="#000" />
-          <Rect
-            x={29}
-            y={20}
-            width={3}
-            height={13}
-            rx={1.5}
-            transform="rotate(90 29 20)"
-            fill="#000"
-          />
-        </Svg>
-      </View>
-      <AddButton title="Select Cover" />
+        <View style={styles.bookIcon}>
+          <Svg
+            width={44}
+            height={44}
+            viewBox="0 0 44 44"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            {...props}
+          >
+            <Path
+              d="M8.25 38.5a4.125 4.125 0 014.125-4.125H35.75V5.5H12.375A4.125 4.125 0 008.25 9.625V38.5zM8.25 38.5v1.375H33"
+              stroke="#000"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <Rect x={21} y={15} width={3} height={13} rx={1.5} fill="#000" />
+            <Rect
+              x={29}
+              y={20}
+              width={3}
+              height={13}
+              rx={1.5}
+              transform="rotate(90 29 20)"
+              fill="#000"
+            />
+          </Svg>
+        </View>
+        <AddButton title="Select Cover" pickImage={openImagePickerAsync} toggleModal={() => {}} handleEditBooks={handleEditBooks}/>
     </View>
   );
 };
 
-const UtilityButtons = ({ title, buttonEdit, deleteBook }) => {
+const UtilityButtons = ({ title, buttonEdit, deleteBook, clearBooks }) => {
   return (
-    <TouchableOpacity style={[styles.button, buttonEdit, deleteBook]}>
+    <TouchableOpacity style={[styles.button, buttonEdit, deleteBook]} onPress={clearBooks} >
       <Text style={styles.textButton}>{title}</Text>
     </TouchableOpacity>
   );
@@ -173,13 +195,13 @@ const AddBookScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <View style={[styles.background, {backgroundColor: route.params.itemColor}]}>
-        <Cover />
+        <Cover route={route} handleEditBooks={route.params.handleEditBooks}/>
         <Text style={styles.title}>{route.params.itemTitle}</Text>
         <Text style={styles.author}>{route.params.itemAuthor}</Text>
         <View style={styles.entireButton}>
-          <UtilityButtons title="DELETE BOOK" deleteBook={styles.deleteBook} />
+          <UtilityButtons title="DELETE BOOK" deleteBook={styles.deleteBook} clearBooks={route.params.clearBooks} />
           <View style={styles.separator}></View>
-          <UtilityButtons title="EDIT" buttonEdit={styles.buttonEdit} />
+          <UtilityButtons title="EDIT" buttonEdit={styles.buttonEdit} clearBooks={() => {}} />
         </View>
       </View>
 
@@ -232,6 +254,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3,
     elevation: 3,
+  },
+  image: {
+    width: scale(86),
+    height: verticalScale(133),
+    borderRadius: 4,
   },
   bookIcon: {
     top: 33,
