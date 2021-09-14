@@ -11,7 +11,7 @@ import {
   FlatList,
 } from "react-native";
 
-import { LogBox } from 'react-native';
+import { LogBox } from "react-native";
 
 import { windowHeight, windowWidth } from "../utils/Dimensions";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
@@ -35,7 +35,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 //LogBox.ignoreAllLogs();
 
 const HomeScreen = ({ navigation }) => {
-  
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [books, setBooks] = useState(images);
   const [titleBook, setTitleBook] = useState("");
@@ -115,59 +114,83 @@ const HomeScreen = ({ navigation }) => {
             />
           </Svg>
         </View>
-        <AddButton title="ADD BOOK" toggleModal={toggleModal} pickImage={() => {}} handleAddBook={() => {}} handleEditBooks={() => {}}/>
+        <AddButton
+          title="ADD BOOK"
+          toggleModal={toggleModal}
+          pickImage={() => {}}
+          handleAddBook={() => {}}
+          handleEditBooks={() => {}}
+        />
       </View>
     );
   };
 
   const handleAddBook = () => {
-    const newBook = [...books, {"title" : titleBook, "author": authorBook, "color": color, "id": `${(books[books.length - 1] && parseInt(books[books.length - 1].id) + 1) || 1}`, "image": null}]
-    AsyncStorage.setItem("storedBooks", JSON.stringify(newBook)).then(() => {
-      setBooks(newBook);
-      setTitleBook("");
-      setAuthorBook("");
-      setSelectedImage(null);
-    }).catch(error => console.log(error));
+    const newBook = [
+      ...books,
+      {
+        title: titleBook,
+        author: authorBook,
+        color: color,
+        id: `${
+          (books[books.length - 1] &&
+            parseInt(books[books.length - 1].id) + 1) ||
+          1
+        }`,
+        image: null,
+      },
+    ];
+    AsyncStorage.setItem("storedBooks", JSON.stringify(newBook))
+      .then(() => {
+        setBooks(newBook);
+        setTitleBook("");
+        setAuthorBook("");
+        setSelectedImage(null);
+      })
+      .catch((error) => console.log(error));
   };
 
   const loadBooks = () => {
-    AsyncStorage.getItem("storedBooks").then(data => {
-      setBooks(JSON.parse(data))
-    }).catch(error => console.log(error));
-  }
+    AsyncStorage.getItem("storedBooks")
+      .then((data) => {
+        setBooks(JSON.parse(data));
+      })
+      .catch((error) => console.log(error));
+  };
 
   const clearBooks = () => {
-    AsyncStorage.setItem("storedBooks", JSON.stringify([])).then(() => {
-      setBooks([]);
-    }).catch(error => console.log(error));
-  }
+    AsyncStorage.setItem("storedBooks", JSON.stringify([]))
+      .then(() => {
+        setBooks([]);
+      })
+      .catch((error) => console.log(error));
+  };
 
   const handleTriggerEdit = (item) => {
     setBookEdit(item);
-    console.log(bookEdit.id);
-  }
+    console.log(bookEdit.id)
+  };
 
-  const handleID = () => {
-
-  }
-
-  const handleEditBooks = async () => {
+  const handleEditBooks = () => {
     const newBook = [...books];
-    
+
     const bookIndex = books.findIndex((book) => book.id === bookEdit.id);
-    newBook.splice(bookIndex, 1, {"title" : bookEdit.title, "author": bookEdit.author, "color": bookEdit.color, "id": bookEdit.id, "image": selectedImage});
-    //console.log(bookEdit.id);
-    AsyncStorage.setItem("storedBooks", JSON.stringify(newBook)).then(() => {
-      setBooks(newBook);
-      setBookEdit(null);
-      setSelectedImage(null);
-
-    }).catch(error => console.log(error));
-  }
-
-  // useEffect(() => {
-  //   handleEditBooks();
-  // }, [bookEdit])
+    newBook.splice(bookIndex, 1, {
+      title: bookEdit.id,
+      author: bookEdit.author,
+      color: bookEdit.color,
+      id: bookEdit.id,
+      image: selectedImage,
+    },);
+  
+    AsyncStorage.setItem("storedBooks", JSON.stringify(newBook))
+      .then(() => {
+        setBooks(newBook);
+        //setBookEdit(null);
+        setSelectedImage(null);
+      })
+      .catch((error) => console.log(error));
+  };
 
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
@@ -177,12 +200,12 @@ const HomeScreen = ({ navigation }) => {
 
   if (!fontsLoaded && !ready) {
     return (
-      <AppLoading 
+      <AppLoading
         startAsync={loadBooks}
         onFinish={() => setReady(true)}
         onError={console.warn}
       />
-    )
+    );
   }
 
   return (
@@ -213,25 +236,21 @@ const HomeScreen = ({ navigation }) => {
             contentContainerStyle={{ marginLeft: 8 }}
             data={books}
             renderItem={({ item }) => (
-              <Book 
-                item={item} 
-                navigation={navigation} 
-                selectedImage={selectedImage} 
-                setSelectedImage={setSelectedImage} 
-                clearBooks={clearBooks} 
+              <Book
+                item={item}
+                navigation={navigation}
+                selectedImage={selectedImage}
+                setSelectedImage={setSelectedImage}
+                clearBooks={clearBooks}
                 handleAddBook={handleAddBook}
                 handleEditBooks={handleEditBooks}
                 handleTriggerEdit={handleTriggerEdit}
-                setBookEdit={setBookEdit}
-                bookEdit={bookEdit}
-                handleID={handleID}
               />
             )}
             keyExtractor={(item) => item.id}
             showsHorizontalScrollIndicator={false}
             horizontal
             removeClippedSubviews={false}
-            
           />
         </View>
         <AddBookButton />

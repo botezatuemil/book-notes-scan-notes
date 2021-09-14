@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import {
   FlatList,
   ScrollView,
@@ -6,7 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Image
+  Image,
 } from "react-native";
 import AddButton from "../components/AddButton";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
@@ -24,14 +24,13 @@ import Chapter from "../components/Chapter";
 import chapters from "../utils/chapters";
 import ModalChapter from "../components/ModalChapter";
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ImagePicker from "expo-image-picker";
 
 const Cover = ({ props, route, handleEditBooks }) => {
-  
-
   let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    let permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
       alert("Permission to access camera roll is required!");
@@ -42,49 +41,57 @@ const Cover = ({ props, route, handleEditBooks }) => {
     //console.log(pickerResult);
 
     if (pickerResult.cancelled === true) {
-        return;
+      return;
     }
     route.params.setSelectedImage(pickerResult.uri);
-  }  
+  };
 
   return (
     <View style={styles.book}>
-        <View style={styles.bookIcon}>
-          <Svg
-            width={44}
-            height={44}
-            viewBox="0 0 44 44"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            {...props}
-          >
-            <Path
-              d="M8.25 38.5a4.125 4.125 0 014.125-4.125H35.75V5.5H12.375A4.125 4.125 0 008.25 9.625V38.5zM8.25 38.5v1.375H33"
-              stroke="#000"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <Rect x={21} y={15} width={3} height={13} rx={1.5} fill="#000" />
-            <Rect
-              x={29}
-              y={20}
-              width={3}
-              height={13}
-              rx={1.5}
-              transform="rotate(90 29 20)"
-              fill="#000"
-            />
-          </Svg>
-        </View>
-        <AddButton title="Select Cover" pickImage={openImagePickerAsync} toggleModal={() => {}} handleEditBooks={handleEditBooks}/>
+      <View style={styles.bookIcon}>
+        <Svg
+          width={44}
+          height={44}
+          viewBox="0 0 44 44"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          {...props}
+        >
+          <Path
+            d="M8.25 38.5a4.125 4.125 0 014.125-4.125H35.75V5.5H12.375A4.125 4.125 0 008.25 9.625V38.5zM8.25 38.5v1.375H33"
+            stroke="#000"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <Rect x={21} y={15} width={3} height={13} rx={1.5} fill="#000" />
+          <Rect
+            x={29}
+            y={20}
+            width={3}
+            height={13}
+            rx={1.5}
+            transform="rotate(90 29 20)"
+            fill="#000"
+          />
+        </Svg>
+      </View>
+      <AddButton
+        title="Select Cover"
+        pickImage={openImagePickerAsync}
+        toggleModal={() => {}}
+        handleEditBooks={route.params.handleEditBooks}     
+      />
     </View>
   );
 };
 
 const UtilityButtons = ({ title, buttonEdit, deleteBook, clearBooks }) => {
   return (
-    <TouchableOpacity style={[styles.button, buttonEdit, deleteBook]} onPress={clearBooks} >
+    <TouchableOpacity
+      style={[styles.button, buttonEdit, deleteBook]}
+      onPress={clearBooks}
+    >
       <Text style={styles.textButton}>{title}</Text>
     </TouchableOpacity>
   );
@@ -93,7 +100,7 @@ const UtilityButtons = ({ title, buttonEdit, deleteBook, clearBooks }) => {
 const DeleteButton = ({ props, clear }) => {
   return (
     <TouchableOpacity style={styles.delete} onPress={clear}>
-      <View style={{  flexDirection: 'row', alignSelf: 'center' }}>
+      <View style={{ flexDirection: "row", alignSelf: "center" }}>
         <Svg
           width={18}
           height={18}
@@ -115,19 +122,19 @@ const DeleteButton = ({ props, clear }) => {
   );
 };
 
-const AddChapter = ({props, toggleModalChapter})=> {
+const AddChapter = ({ props, toggleModalChapter }) => {
   return (
     <TouchableOpacity style={styles.addChapter} onPress={toggleModalChapter}>
-      <View style={{  flexDirection: 'row', alignSelf: 'center' }}>
+      <View style={{ flexDirection: "row", alignSelf: "center" }}>
         <Svg
-        width={13}
-        height={13}
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        {...props}
+          width={13}
+          height={13}
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          {...props}
         >
-        <Rect x={5} width={3} height={13} rx={1.5} fill="#fff" />
-        <Rect
+          <Rect x={5} width={3} height={13} rx={1.5} fill="#fff" />
+          <Rect
             x={13}
             y={5}
             width={3}
@@ -135,9 +142,9 @@ const AddChapter = ({props, toggleModalChapter})=> {
             rx={1.5}
             transform="rotate(90 13 5)"
             fill="#fff"
-        />
+          />
         </Svg>
-        <Text style={[styles.deleteText, {color: '#fff'}]}>ADD CHAPTER</Text>
+        <Text style={[styles.deleteText, { color: "#fff" }]}>ADD CHAPTER</Text>
       </View>
     </TouchableOpacity>
   );
@@ -148,33 +155,49 @@ const AddBookScreen = ({ navigation, route }) => {
   const [isModalChapterVisible, setIsModalChapterVisible] = useState(false);
   const [initialChapters, setInitialChapters] = useState(chapters[0].files);
   //const [newChapters, setNewChapters] = useState(initialChapters);
-  const [ready, setReady] = useState(false)
-  
+  const [ready, setReady] = useState(false);
+
   const toggleModalChapter = () => {
     setIsModalChapterVisible(!isModalChapterVisible);
-  }
+  };
 
   const handleAddchapter = () => {
-    const newTodos = [...initialChapters, {"name": title, "id": `${(initialChapters[initialChapters.length - 1] && parseInt(initialChapters[initialChapters.length - 1].id) + 1) || 1}`}];
-    AsyncStorage.setItem("storedChapters", JSON.stringify(newTodos)).then(() => {
-      setInitialChapters(newTodos);
-      setTitle(null);
-    }).catch(error => console.log(error));  
-  }
+    const newTodos = [
+      ...initialChapters,
+      {
+        name: title,
+        id: `${
+          (initialChapters[initialChapters.length - 1] &&
+            parseInt(initialChapters[initialChapters.length - 1].id) + 1) ||
+          1
+        }`,
+      },
+    ];
+    AsyncStorage.setItem("storedChapters", JSON.stringify(newTodos))
+      .then(() => {
+        setInitialChapters(newTodos);
+        setTitle(null);
+      })
+      .catch((error) => console.log(error));
+  };
 
   const loadChapters = () => {
-    AsyncStorage.getItem("storedChapters").then(data => {
-      if (data != null) {
-        setInitialChapters(JSON.parse(data))
-      }
-    }).catch((error) => console.log(error));
-  }
+    AsyncStorage.getItem("storedChapters")
+      .then((data) => {
+        if (data != null) {
+          setInitialChapters(JSON.parse(data));
+        }
+      })
+      .catch((error) => console.log(error));
+  };
 
   const clear = () => {
-    AsyncStorage.setItem("storedChapters", JSON.stringify([])).then(() => {
-        setInitialChapters([])
-    }).catch((error) => console.log(error));
-  }
+    AsyncStorage.setItem("storedChapters", JSON.stringify([]))
+      .then(() => {
+        setInitialChapters([]);
+      })
+      .catch((error) => console.log(error));
+  };
 
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
@@ -184,31 +207,41 @@ const AddBookScreen = ({ navigation, route }) => {
 
   if (!fontsLoaded && !ready) {
     return (
-      <AppLoading 
+      <AppLoading
         startAsync={loadChapters}
         onFinish={() => setReady(true)}
         onError={console.warn}
       />
-    )
+    );
   }
 
   return (
     <View style={styles.container}>
-      <View style={[styles.background, {backgroundColor: route.params.itemColor}]}>
-        <Cover route={route} handleEditBooks={route.params.handleEditBooks}/>
+      <View
+        style={[styles.background, { backgroundColor: route.params.itemColor }]}
+      >
+        <Cover route={route} />
         <Text style={styles.title}>{route.params.itemTitle}</Text>
         <Text style={styles.author}>{route.params.itemAuthor}</Text>
         <View style={styles.entireButton}>
-          <UtilityButtons title="DELETE BOOK" deleteBook={styles.deleteBook} clearBooks={route.params.clearBooks} />
+          <UtilityButtons
+            title="DELETE BOOK"
+            deleteBook={styles.deleteBook}
+            clearBooks={route.params.clearBooks}
+          />
           <View style={styles.separator}></View>
-          <UtilityButtons title="EDIT" buttonEdit={styles.buttonEdit} clearBooks={() => {}} />
+          <UtilityButtons
+            title="EDIT"
+            buttonEdit={styles.buttonEdit}
+            clearBooks={() => {}}
+          />
         </View>
       </View>
 
       <FlatList
         style={styles.list}
         data={initialChapters}
-        renderItem={({item}) => <Chapter item={item} />}
+        renderItem={({ item }) => <Chapter item={item} />}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
       />
@@ -237,7 +270,6 @@ const styles = StyleSheet.create({
   background: {
     backgroundColor: "#008880",
     height: verticalScale(360),
-    
   },
   book: {
     width: scale(86),
@@ -248,8 +280,8 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     shadowColor: "#000",
     shadowOffset: {
-	    width: 0,
-	    height: 2,
+      width: 0,
+      height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3,
@@ -290,9 +322,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: {
-	    width: 0,
-	    height: 2,
-      },
+      width: 0,
+      height: 2,
+    },
     shadowOpacity: 1,
     shadowRadius: 3.84,
     elevation: 3,
@@ -301,7 +333,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 12,
     borderBottomEndRadius: 12,
     //marginRight: 48,
-    
   },
   deleteBook: {
     borderTopLeftRadius: 12,
@@ -325,7 +356,6 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     marginBottom: 36,
     //alignSelf: "center",
-    
   },
   delete: {
     position: "absolute",
@@ -336,8 +366,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 6,
     justifyContent: "center",
-    
-   // alignSelf: 'center'
+
+    // alignSelf: 'center'
   },
   deleteText: {
     fontFamily: "DMSans_700Bold",
@@ -350,14 +380,13 @@ const styles = StyleSheet.create({
     //alignSelf: 'flex-end',
     width: scale(115),
     height: verticalScale(36),
-    backgroundColor: '#282536',
+    backgroundColor: "#282536",
     borderRadius: 6,
     justifyContent: "center",
-    marginLeft: 230
-
+    marginLeft: 230,
   },
   list: {
     top: verticalScale(60),
-    marginBottom: 150
-  }
+    marginBottom: 150,
+  },
 });

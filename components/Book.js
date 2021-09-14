@@ -10,7 +10,16 @@ import {
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 
-const Book = ({ navigation, item, selectedImage, setSelectedImage, clearBooks, handleAddBook, handleEditBooks, handleTriggerEdit, setBookEdit, bookEdit, handleID }) => {
+const Book = ({
+  navigation,
+  item,
+  selectedImage,
+  setSelectedImage,
+  clearBooks,
+  handleAddBook,
+  handleEditBooks,
+  handleTriggerEdit,
+}) => {
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -35,14 +44,12 @@ const Book = ({ navigation, item, selectedImage, setSelectedImage, clearBooks, h
               setSelectedImage: setSelectedImage,
               clearBooks: clearBooks,
               handleAddBook: handleAddBook,
-              handleEditBooks: handleEditBooks
+              handleEditBooks: handleEditBooks,
             });
-            setBookEdit(item)}
-          }
+            handleTriggerEdit(item);
+          }}
         >
-          <Image 
-            source={{uri: item.image}} 
-            style={styles.image} />
+          <Image source={{ uri: item.image }} style={styles.image} />
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
@@ -57,14 +64,10 @@ const Book = ({ navigation, item, selectedImage, setSelectedImage, clearBooks, h
               setSelectedImage: setSelectedImage,
               clearBooks: clearBooks,
               handleAddBook: handleAddBook,
-              handleEditBooks: handleEditBooks
+              handleEditBooks: handleEditBooks,
             });
-            //setBookEdit(item);
-            //handleID(item)
             handleTriggerEdit(item);
-          }
-         
-        }
+          }}
         ></TouchableOpacity>
       )}
 
