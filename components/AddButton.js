@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {
   StyleSheet,
   Text,
@@ -17,12 +17,27 @@ import {
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 
+
+
 const AddButton = ({
   title,
   pickImage,
   toggleModal,
   handleEditBooks,
+  bookEdit, 
+  setBookEdit,
+  titleBook, 
+  author,
+  color,
+  id,
 }) => {
+
+  
+
+  
+
+  
+
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -39,7 +54,7 @@ const AddButton = ({
       onPress={() => {
         toggleModal();
         pickImage();
-        handleEditBooks();
+        //console.log(newBookEdit.id)
       }}
     >
       <Text style={styles.addBookText}>{title}</Text>

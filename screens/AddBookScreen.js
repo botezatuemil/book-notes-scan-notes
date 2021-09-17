@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FlatList,
   ScrollView,
@@ -27,10 +27,12 @@ import ModalChapter from "../components/ModalChapter";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 
-const Cover = ({ props, route, handleEditBooks }) => {
+const Cover = ({ props, route, handleEditBooks, id }) => {
+
+  const [selectedImage, setSelectedImage] = useState();
+
   let openImagePickerAsync = async () => {
-    let permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
       alert("Permission to access camera roll is required!");
@@ -43,8 +45,9 @@ const Cover = ({ props, route, handleEditBooks }) => {
     if (pickerResult.cancelled === true) {
       return;
     }
-    route.params.setSelectedImage(pickerResult.uri);
+    setSelectedImage(pickerResult.uri);
   };
+
 
   return (
     <View style={styles.book}>
@@ -80,8 +83,46 @@ const Cover = ({ props, route, handleEditBooks }) => {
         title="Select Cover"
         pickImage={openImagePickerAsync}
         toggleModal={() => {}}
-        handleEditBooks={route.params.handleEditBooks}     
+        handleEditBooks={route.params.handleEditBooks}   
+        bookEdit={route.params.bookEdit}
+        setBookEdit={route.params.setBookEdit}  
+        titleBook={route.params.title}
+        author={route.params.author}
+        color={route.params.color}
+        id={route.params.id}
+        
+        
       />
+      
+
+    {selectedImage != null ? (
+      <TouchableOpacity 
+      style={{width: 60, height: 40, backgroundColor: '#324223', top: 0}}
+      onPress={() => {
+        route.params.handleEditBooks({
+          title: route.params.itemTitle,
+          author:route.params.itemAuthor,
+          color: route.params.itemColor,
+          id: route.params.itemID,
+          image: selectedImage
+        });
+        route.params.setBookEdit({
+          title: route.params.itemTitle,
+          author:route.params.itemAuthor,
+          color: route.params.itemColor,
+          id: route.params.itemID,
+          image: selectedImage
+        });
+        setSelectedImage(null);
+      }}  
+    >
+      <Text>Update</Text>
+    </TouchableOpacity>
+    ): (
+      <>
+      </>
+    )}
+      
     </View>
   );
 };
@@ -157,6 +198,7 @@ const AddBookScreen = ({ navigation, route }) => {
   //const [newChapters, setNewChapters] = useState(initialChapters);
   const [ready, setReady] = useState(false);
 
+  //console.log(route.params.itemID)
   const toggleModalChapter = () => {
     setIsModalChapterVisible(!isModalChapterVisible);
   };
@@ -199,6 +241,8 @@ const AddBookScreen = ({ navigation, route }) => {
       .catch((error) => console.log(error));
   };
 
+  
+
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -215,12 +259,14 @@ const AddBookScreen = ({ navigation, route }) => {
     );
   }
 
+
+  
   return (
     <View style={styles.container}>
       <View
         style={[styles.background, { backgroundColor: route.params.itemColor }]}
       >
-        <Cover route={route} />
+        <Cover route={route} id={route.params.itemID} />
         <Text style={styles.title}>{route.params.itemTitle}</Text>
         <Text style={styles.author}>{route.params.itemAuthor}</Text>
         <View style={styles.entireButton}>

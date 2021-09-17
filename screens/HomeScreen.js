@@ -42,7 +42,8 @@ const HomeScreen = ({ navigation }) => {
   const [color, setColor] = useState("");
   const [ready, setReady] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [bookEdit, setBookEdit] = useState(1);
+  const [bookEdit, setBookEdit] = useState(null);
+  
 
   const SearchBar = ({ props }) => {
     return (
@@ -120,6 +121,8 @@ const HomeScreen = ({ navigation }) => {
           pickImage={() => {}}
           handleAddBook={() => {}}
           handleEditBooks={() => {}}
+          bookEdit={() => {}}
+          setBookEdit={() => {}}
         />
       </View>
     );
@@ -166,23 +169,19 @@ const HomeScreen = ({ navigation }) => {
       .catch((error) => console.log(error));
   };
 
+ 
   const handleTriggerEdit = (item) => {
-    setBookEdit(item);
-    console.log(bookEdit.id)
+
   };
 
-  const handleEditBooks = () => {
+  const handleEditBooks = (item) => {
     const newBook = [...books];
 
-    const bookIndex = books.findIndex((book) => book.id === bookEdit.id);
-    newBook.splice(bookIndex, 1, {
-      title: bookEdit.id,
-      author: bookEdit.author,
-      color: bookEdit.color,
-      id: bookEdit.id,
-      image: selectedImage,
-    },);
-  
+    const bookIndex = books.findIndex((book) => book.id === item.id);
+    newBook.splice(bookIndex, 1, item);
+    
+    //console.log(bookIndex);
+
     AsyncStorage.setItem("storedBooks", JSON.stringify(newBook))
       .then(() => {
         setBooks(newBook);
@@ -191,6 +190,9 @@ const HomeScreen = ({ navigation }) => {
       })
       .catch((error) => console.log(error));
   };
+
+ 
+
 
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
@@ -245,6 +247,9 @@ const HomeScreen = ({ navigation }) => {
                 handleAddBook={handleAddBook}
                 handleEditBooks={handleEditBooks}
                 handleTriggerEdit={handleTriggerEdit}
+                bookEdit={bookEdit}
+                setBookEdit={setBookEdit}
+                
               />
             )}
             keyExtractor={(item) => item.id}

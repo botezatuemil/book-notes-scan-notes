@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 
@@ -19,7 +19,18 @@ const Book = ({
   handleAddBook,
   handleEditBooks,
   handleTriggerEdit,
+  bookEdit,
+  setBookEdit,
+  //newBookEdit
 }) => {
+  // const newBookEdit = {
+  //   title: item.title,
+  //   author: item.author,
+  //   color: item.color,
+  //   id: item.id,
+  //   image: selectedImage,
+  // };
+  
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -29,13 +40,16 @@ const Book = ({
   if (!fontsLoaded) {
     return <AppLoading />;
   }
-
+ 
   return (
     <View style={styles.container}>
       {item.image != null ? (
         <TouchableOpacity
           onPress={() => {
+            
+            handleTriggerEdit(item);
             navigation.navigate("AddBookScreen", {
+              itemID: item.id,
               itemColor: item.color,
               itemTitle: item.title,
               itemAuthor: item.author,
@@ -45,8 +59,10 @@ const Book = ({
               clearBooks: clearBooks,
               handleAddBook: handleAddBook,
               handleEditBooks: handleEditBooks,
+              bookEdit: bookEdit,
+              setBookEdit: setBookEdit,
+            //  newBookEdit: newBookEdit,
             });
-            handleTriggerEdit(item);
           }}
         >
           <Image source={{ uri: item.image }} style={styles.image} />
@@ -55,7 +71,10 @@ const Book = ({
         <TouchableOpacity
           style={[styles.image, { backgroundColor: "#C4C4C4" }]}
           onPress={() => {
+           
+            handleTriggerEdit(item);
             navigation.navigate("AddBookScreen", {
+              itemID: item.id,
               itemColor: item.color,
               itemTitle: item.title,
               itemAuthor: item.author,
@@ -65,8 +84,10 @@ const Book = ({
               clearBooks: clearBooks,
               handleAddBook: handleAddBook,
               handleEditBooks: handleEditBooks,
+              bookEdit: bookEdit,
+              setBookEdit: setBookEdit,
+              //newBookEdit: newBookEdit,
             });
-            handleTriggerEdit(item);
           }}
         ></TouchableOpacity>
       )}
