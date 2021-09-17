@@ -27,7 +27,6 @@ import {
 
 import Book from "../components/Book";
 import images from "../utils/images";
-import AddButton from "../components/AddButton";
 import ModalComponent from "../components/ModalComponent";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -43,7 +42,6 @@ const HomeScreen = ({ navigation }) => {
   const [ready, setReady] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [bookEdit, setBookEdit] = useState(null);
-  
 
   const SearchBar = ({ props }) => {
     return (
@@ -115,15 +113,14 @@ const HomeScreen = ({ navigation }) => {
             />
           </Svg>
         </View>
-        <AddButton
-          title="ADD BOOK"
-          toggleModal={toggleModal}
-          pickImage={() => {}}
-          handleAddBook={() => {}}
-          handleEditBooks={() => {}}
-          bookEdit={() => {}}
-          setBookEdit={() => {}}
-        />
+        <TouchableOpacity
+          style={[styles.addBook, { top: 41 }]}
+          onPress={() => {
+            toggleModal();
+          }}
+        >
+          <Text style={styles.addBookText}>Select Cover</Text>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -169,17 +166,14 @@ const HomeScreen = ({ navigation }) => {
       .catch((error) => console.log(error));
   };
 
- 
-  const handleTriggerEdit = (item) => {
-
-  };
+  const handleTriggerEdit = (item) => {};
 
   const handleEditBooks = (item) => {
     const newBook = [...books];
 
     const bookIndex = books.findIndex((book) => book.id === item.id);
     newBook.splice(bookIndex, 1, item);
-    
+
     //console.log(bookIndex);
 
     AsyncStorage.setItem("storedBooks", JSON.stringify(newBook))
@@ -190,9 +184,6 @@ const HomeScreen = ({ navigation }) => {
       })
       .catch((error) => console.log(error));
   };
-
- 
-
 
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
@@ -249,7 +240,6 @@ const HomeScreen = ({ navigation }) => {
                 handleTriggerEdit={handleTriggerEdit}
                 bookEdit={bookEdit}
                 setBookEdit={setBookEdit}
-                
               />
             )}
             keyExtractor={(item) => item.id}
@@ -344,6 +334,21 @@ const styles = StyleSheet.create({
   },
   bookIcon: {
     top: 33,
+    alignSelf: "center",
+  },
+  addBook: {
+    top: 45,
+    backgroundColor: "#282536",
+    height: verticalScale(20),
+    borderRadius: 3,
+    justifyContent: "center",
+    alignSelf: "center",
+    padding: 12,
+  },
+  addBookText: {
+    fontSize: 8,
+    fontFamily: "DMSans_700Bold",
+    color: "#fff",
     alignSelf: "center",
   },
 });

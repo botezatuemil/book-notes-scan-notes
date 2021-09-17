@@ -8,7 +8,6 @@ import {
   View,
   Image,
 } from "react-native";
-import AddButton from "../components/AddButton";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
 import Svg, { Path, Rect } from "react-native-svg";
 
@@ -27,9 +26,48 @@ import ModalChapter from "../components/ModalChapter";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 
-const Cover = ({ props, route, handleEditBooks, id }) => {
-
+const Cover = ({ props, route }) => {
   const [selectedImage, setSelectedImage] = useState();
+
+  const SelectCover = ({ pickImage }) => {
+    return (
+      <TouchableOpacity
+        style={[styles.addBook, { top: 41 }]}
+        onPress={() => {
+          pickImage();
+        }}
+      >
+        <Text style={styles.addBookText}>Select Cover</Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const UpdateImage = ({ route }) => {
+    return (
+      <TouchableOpacity
+        style={styles.addBook}
+        onPress={() => {
+          route.params.handleEditBooks({
+            title: route.params.itemTitle,
+            author: route.params.itemAuthor,
+            color: route.params.itemColor,
+            id: route.params.itemID,
+            image: selectedImage,
+          });
+          route.params.setBookEdit({
+            title: route.params.itemTitle,
+            author: route.params.itemAuthor,
+            color: route.params.itemColor,
+            id: route.params.itemID,
+            image: selectedImage,
+          });
+          setSelectedImage(null);
+        }}
+      >
+        <Text style={styles.addBookText}>Update</Text>
+      </TouchableOpacity>
+    );
+  };
 
   let openImagePickerAsync = async () => {
     let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -40,14 +78,12 @@ const Cover = ({ props, route, handleEditBooks, id }) => {
     }
 
     let pickerResult = await ImagePicker.launchImageLibraryAsync();
-    //console.log(pickerResult);
 
     if (pickerResult.cancelled === true) {
       return;
     }
     setSelectedImage(pickerResult.uri);
   };
-
 
   return (
     <View style={styles.book}>
@@ -79,50 +115,9 @@ const Cover = ({ props, route, handleEditBooks, id }) => {
           />
         </Svg>
       </View>
-      <AddButton
-        title="Select Cover"
-        pickImage={openImagePickerAsync}
-        toggleModal={() => {}}
-        handleEditBooks={route.params.handleEditBooks}   
-        bookEdit={route.params.bookEdit}
-        setBookEdit={route.params.setBookEdit}  
-        titleBook={route.params.title}
-        author={route.params.author}
-        color={route.params.color}
-        id={route.params.id}
-        
-        
-      />
-      
+      <SelectCover pickImage={openImagePickerAsync} />
 
-    {selectedImage != null ? (
-      <TouchableOpacity 
-      style={{width: 60, height: 40, backgroundColor: '#324223', top: 0}}
-      onPress={() => {
-        route.params.handleEditBooks({
-          title: route.params.itemTitle,
-          author:route.params.itemAuthor,
-          color: route.params.itemColor,
-          id: route.params.itemID,
-          image: selectedImage
-        });
-        route.params.setBookEdit({
-          title: route.params.itemTitle,
-          author:route.params.itemAuthor,
-          color: route.params.itemColor,
-          id: route.params.itemID,
-          image: selectedImage
-        });
-        setSelectedImage(null);
-      }}  
-    >
-      <Text>Update</Text>
-    </TouchableOpacity>
-    ): (
-      <>
-      </>
-    )}
-      
+      {selectedImage != null ? <UpdateImage route={route} /> : <></>}
     </View>
   );
 };
@@ -241,8 +236,6 @@ const AddBookScreen = ({ navigation, route }) => {
       .catch((error) => console.log(error));
   };
 
-  
-
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -259,8 +252,6 @@ const AddBookScreen = ({ navigation, route }) => {
     );
   }
 
-
-  
   return (
     <View style={styles.container}>
       <View
@@ -434,5 +425,20 @@ const styles = StyleSheet.create({
   list: {
     top: verticalScale(60),
     marginBottom: 150,
+  },
+  addBook: {
+    top: 45,
+    backgroundColor: "#282536",
+    height: verticalScale(20),
+    borderRadius: 3,
+    justifyContent: "center",
+    alignSelf: "center",
+    padding: 12,
+  },
+  addBookText: {
+    fontSize: 8,
+    fontFamily: "DMSans_700Bold",
+    color: "#fff",
+    alignSelf: "center",
   },
 });
