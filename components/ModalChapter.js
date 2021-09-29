@@ -24,7 +24,8 @@ const ModalChapter = ({
   title,
   setTitle,
  // handleAddchapter,
-  addChapterInBook
+  addChapterInBook,
+  handleClick
 }) => {
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
@@ -50,9 +51,11 @@ const ModalChapter = ({
 
         <TouchableOpacity
           style={styles.save}
-          onPress={() => {
-            toggleModalChapter();
+          onPress={() => { 
             addChapterInBook();
+            toggleModalChapter();
+           
+            //handleClick();
             //handleAddchapter();
           }}
         >

@@ -171,7 +171,7 @@ const HomeScreen = ({ navigation }) => {
 
   const handleTriggerEdit = (item) => {};
 
-  const handleEditBooks = (item) => {
+  const handleEditBooks = async(item) => {
     const newBook = [...books];
 
     const bookIndex = books.findIndex((book) => book.id === item.id);

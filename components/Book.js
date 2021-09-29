@@ -64,7 +64,9 @@ const Book = ({
               bookEdit: bookEdit,
               setBookEdit: setBookEdit,
               books: books,
-              setBooks: setBooks
+              setBooks: setBooks,
+              chapters: item.chapters
+
             //  newBookEdit: newBookEdit,
             });
           }}
@@ -91,7 +93,8 @@ const Book = ({
               bookEdit: bookEdit,
               setBookEdit: setBookEdit,
               books: books,
-              setBooks: setBooks
+              setBooks: setBooks,
+              chapters: item.chapters
               //newBookEdit: newBookEdit,
             });
           }}

@@ -25,6 +25,8 @@ import ModalChapter from "../components/ModalChapter";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
+import { useIsFocused} from '@react-navigation/native'; 
+import useForceUpdate from 'use-force-update';
 
 const Cover = ({ props, route }) => {
   const [selectedImage, setSelectedImage] = useState();
@@ -53,6 +55,7 @@ const Cover = ({ props, route }) => {
             color: route.params.itemColor,
             id: route.params.itemID,
             image: selectedImage,
+            chapters: route.params.chapters
           });
           route.params.setBookEdit({
             title: route.params.itemTitle,
@@ -60,6 +63,7 @@ const Cover = ({ props, route }) => {
             color: route.params.itemColor,
             id: route.params.itemID,
             image: selectedImage,
+            chapters: route.params.chapters
           });
           setSelectedImage(null);
         }}
@@ -192,13 +196,13 @@ const AddBookScreen = ({ navigation, route }) => {
   const [initialChapters, setInitialChapters] = useState([]);
   const [ready, setReady] = useState(false);
   const [refresh, setRefresh] = useState(false);
-  console.log(route.params.books[route.params.itemID - 1])
+  const forceUpdate = useForceUpdate();
+  const [list, setList] = useState(route.params.books[route.params.itemID - 1].chapters)
+  //console.log(route.params.books[route.params.itemID - 1])
 
   const toggleModalChapter = () => {
     setIsModalChapterVisible(!isModalChapterVisible);
   };
-
-  //console.log(route.params.books);
 
   const handleAddchapter = () => {
     const newTodos = [
@@ -247,10 +251,10 @@ const AddBookScreen = ({ navigation, route }) => {
       .catch((error) => console.log(error));
   };
 
+
   const addChapterInBook = () => {
    
-  
-    const chapter = route.params.books[route.params.itemID - 1].chapters
+    const chapter = list
 
     const newChapter = [
       ...chapter,
@@ -263,9 +267,10 @@ const AddBookScreen = ({ navigation, route }) => {
         }`,
       },
     ];
-    setInitialChapters(newChapter);
+    setList(newChapter)
+   
     setTitle(null);
-    //console.log(initialChapters)
+    
 
     route.params.handleEditBooks({
       title: route.params.itemTitle,
@@ -277,23 +282,29 @@ const AddBookScreen = ({ navigation, route }) => {
     });
 
     
-    route.params.setBookEdit({
-      title: route.params.itemTitle,
-      author: route.params.itemAuthor,
-      color: route.params.itemColor,
-      id: route.params.itemID,
-      image:  route.params.itemImage,
-      chapters: newChapter,
+    // route.params.setBookEdit({
+    //   title: route.params.itemTitle,
+    //   author: route.params.itemAuthor,
+    //   color: route.params.itemColor,
+    //   id: route.params.itemID,
+    //   image:  route.params.itemImage,
+    //   chapters: newChapter,
      
-    });
+    // });
 
     setRefresh(!refresh);
+    
     //return [...route.params.setBookEdit]
     //setInitialChapters(null);
     //setTitle(null);
   }
 
+  const handleClick = React.useCallback(() => {
+    alert('I will re-render now.');
+    forceUpdate();
+  }, [forceUpdate]);
 
+  //useIsFocused();
 
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
@@ -310,6 +321,9 @@ const AddBookScreen = ({ navigation, route }) => {
       />
     );
   }
+  
+  console.log(refresh);
+
 
   // useEffect(() => {
   //   route.params.setBookEdit({
@@ -345,7 +359,7 @@ const AddBookScreen = ({ navigation, route }) => {
           />
           </View>
 
-          <TouchableOpacity onPress={addChapterInBook}>
+          <TouchableOpacity onPress={handleClick}>
             <Text>Update</Text>
           </TouchableOpacity>  
       </View>
@@ -357,25 +371,17 @@ const AddBookScreen = ({ navigation, route }) => {
         title={title}
         setTitle={setTitle}
         addChapterInBook={addChapterInBook}
+        handleClick={handleClick}
       />
 
       <FlatList
         style={styles.list}
-        data={route.params.books[route.params.itemID - 1].chapters}
-        extraData={route.params.setBookEdit}
+        data={list}
+        extraData={refresh}
         renderItem={({ item }) => <Chapter item={item} />}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
     />
-
-    {/* {route.params.books[route.params.itemID].chapters != null ? (
-      
-    ): (
-        <View></View>
-    )} */}
-
-      
-
       
       <View style={styles.footer}>
         <DeleteButton clear={clear} />
