@@ -21,6 +21,8 @@ const Book = ({
   handleTriggerEdit,
   bookEdit,
   setBookEdit,
+  books,
+  setBooks
   //newBookEdit
 }) => {
   // const newBookEdit = {
@@ -61,6 +63,8 @@ const Book = ({
               handleEditBooks: handleEditBooks,
               bookEdit: bookEdit,
               setBookEdit: setBookEdit,
+              books: books,
+              setBooks: setBooks
             //  newBookEdit: newBookEdit,
             });
           }}
@@ -86,6 +90,8 @@ const Book = ({
               handleEditBooks: handleEditBooks,
               bookEdit: bookEdit,
               setBookEdit: setBookEdit,
+              books: books,
+              setBooks: setBooks
               //newBookEdit: newBookEdit,
             });
           }}

@@ -35,7 +35,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HomeScreen = ({ navigation }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [books, setBooks] = useState(images);
+  const [books, setBooks] = useState([]);
   const [titleBook, setTitleBook] = useState("");
   const [authorBook, setAuthorBook] = useState("");
   const [color, setColor] = useState("");
@@ -138,6 +138,8 @@ const HomeScreen = ({ navigation }) => {
           1
         }`,
         image: null,
+        chapters: [
+        ]
       },
     ];
     AsyncStorage.setItem("storedBooks", JSON.stringify(newBook))
@@ -150,6 +152,7 @@ const HomeScreen = ({ navigation }) => {
       .catch((error) => console.log(error));
   };
 
+  
   const loadBooks = () => {
     AsyncStorage.getItem("storedBooks")
       .then((data) => {
@@ -173,8 +176,6 @@ const HomeScreen = ({ navigation }) => {
 
     const bookIndex = books.findIndex((book) => book.id === item.id);
     newBook.splice(bookIndex, 1, item);
-
-    //console.log(bookIndex);
 
     AsyncStorage.setItem("storedBooks", JSON.stringify(newBook))
       .then(() => {
@@ -240,6 +241,8 @@ const HomeScreen = ({ navigation }) => {
                 handleTriggerEdit={handleTriggerEdit}
                 bookEdit={bookEdit}
                 setBookEdit={setBookEdit}
+                books={books}
+                setBooks={setBooks}
               />
             )}
             keyExtractor={(item) => item.id}
@@ -264,7 +267,7 @@ const HomeScreen = ({ navigation }) => {
         setAuthorBook={setAuthorBook}
         setColor={setColor}
         handleAddBook={handleAddBook}
-        books={books}
+        
       />
     </ScrollView>
   );

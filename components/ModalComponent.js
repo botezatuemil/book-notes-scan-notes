@@ -166,7 +166,7 @@ const ModalComponent = ({
             onPress={() => {
               handleAddBook();
               toggleModal();
-              console.log(books)
+              //console.log(books)
             }}
           >
             <Text style={styles.textSave}>{save}</Text>

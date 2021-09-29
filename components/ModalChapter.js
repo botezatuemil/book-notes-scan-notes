@@ -18,9 +18,14 @@ import {
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 
-const ModalChapter = ({ isModalChapterVisible, toggleModalChapter, title, setTitle, handleAddchapter, counter, setCounter }) => {
-
-
+const ModalChapter = ({
+  isModalChapterVisible,
+  toggleModalChapter,
+  title,
+  setTitle,
+ // handleAddchapter,
+  addChapterInBook
+}) => {
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -43,11 +48,16 @@ const ModalChapter = ({ isModalChapterVisible, toggleModalChapter, title, setTit
           />
         </View>
 
-        <TouchableOpacity style={styles.save} onPress={() => {toggleModalChapter(); handleAddchapter(); }}>
+        <TouchableOpacity
+          style={styles.save}
+          onPress={() => {
+            toggleModalChapter();
+            addChapterInBook();
+            //handleAddchapter();
+          }}
+        >
           <Text style={styles.textSave}>Create</Text>
         </TouchableOpacity>
-
-        
       </View>
     </Modal>
   );
@@ -79,19 +89,19 @@ const styles = StyleSheet.create({
     fontFamily: "DMSans_700Bold",
   },
   save: {
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     width: scale(56),
     height: verticalScale(24),
     borderRadius: 3,
-    justifyContent: 'center',
-    alignSelf: 'flex-end',
+    justifyContent: "center",
+    alignSelf: "flex-end",
     marginRight: 20,
-    top: 50
+    top: 50,
   },
   textSave: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 10,
-    fontFamily: 'DMSans_700Bold',
-    alignSelf: 'center'
+    fontFamily: "DMSans_700Bold",
+    alignSelf: "center",
   },
 });
