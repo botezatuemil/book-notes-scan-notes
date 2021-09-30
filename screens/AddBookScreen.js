@@ -28,7 +28,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useIsFocused} from '@react-navigation/native'; 
 import useForceUpdate from 'use-force-update';
 
-const Cover = ({ props, route }) => {
+const Cover = ({ props, route, list }) => {
   const [selectedImage, setSelectedImage] = useState();
 
   const SelectCover = ({ pickImage }) => {
@@ -55,7 +55,7 @@ const Cover = ({ props, route }) => {
             color: route.params.itemColor,
             id: route.params.itemID,
             image: selectedImage,
-            chapters: route.params.chapters
+            chapters: list
           });
           route.params.setBookEdit({
             title: route.params.itemTitle,
@@ -63,7 +63,7 @@ const Cover = ({ props, route }) => {
             color: route.params.itemColor,
             id: route.params.itemID,
             image: selectedImage,
-            chapters: route.params.chapters
+            chapters: list
           });
           setSelectedImage(null);
         }}
@@ -198,44 +198,12 @@ const AddBookScreen = ({ navigation, route }) => {
   const [refresh, setRefresh] = useState(false);
   const forceUpdate = useForceUpdate();
   const [list, setList] = useState(route.params.books[route.params.itemID - 1].chapters)
-  //console.log(route.params.books[route.params.itemID - 1])
-
+  
   const toggleModalChapter = () => {
     setIsModalChapterVisible(!isModalChapterVisible);
   };
 
-  const handleAddchapter = () => {
-    const newTodos = [
-      ...initialChapters,
-      {
-        name: title,
-        id: `${
-          (initialChapters[initialChapters.length - 1] &&
-            parseInt(initialChapters[initialChapters.length - 1].id) + 1) ||
-          1
-        }`,
-      },
-    ];
-
-    setInitialChapters(newTodos);
-    setTitle(null);
-    // AsyncStorage.setItem("storedChapters", JSON.stringify(newTodos))
-    //   .then(() => {
-    //     setInitialChapters(newTodos);
-    //     setTitle(null);
-    //   })
-    //   .catch((error) => console.log(error));
-  };
-
   const loadChapters = () => {
-    // AsyncStorage.getItem("storedChapters")
-    //   .then((data) => {
-    //     if (data != null) {
-    //       setInitialChapters(JSON.parse(data));
-    //     }
-    //   })
-    //   .catch((error) => console.log(error));
-
     AsyncStorage.getItem("storedBooks")
       .then((data) => {
         route.params.setBooks(JSON.parse(data));
@@ -251,11 +219,9 @@ const AddBookScreen = ({ navigation, route }) => {
       .catch((error) => console.log(error));
   };
 
-
   const addChapterInBook = () => {
    
     const chapter = list
-
     const newChapter = [
       ...chapter,
       {
@@ -268,10 +234,8 @@ const AddBookScreen = ({ navigation, route }) => {
       },
     ];
     setList(newChapter)
-   
     setTitle(null);
     
-
     route.params.handleEditBooks({
       title: route.params.itemTitle,
       author: route.params.itemAuthor,
@@ -280,31 +244,7 @@ const AddBookScreen = ({ navigation, route }) => {
       image: route.params.itemImage,
       chapters: newChapter
     });
-
-    
-    // route.params.setBookEdit({
-    //   title: route.params.itemTitle,
-    //   author: route.params.itemAuthor,
-    //   color: route.params.itemColor,
-    //   id: route.params.itemID,
-    //   image:  route.params.itemImage,
-    //   chapters: newChapter,
-     
-    // });
-
-    setRefresh(!refresh);
-    
-    //return [...route.params.setBookEdit]
-    //setInitialChapters(null);
-    //setTitle(null);
   }
-
-  const handleClick = React.useCallback(() => {
-    alert('I will re-render now.');
-    forceUpdate();
-  }, [forceUpdate]);
-
-  //useIsFocused();
 
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
@@ -321,28 +261,13 @@ const AddBookScreen = ({ navigation, route }) => {
       />
     );
   }
-  
-  console.log(refresh);
-
-
-  // useEffect(() => {
-  //   route.params.setBookEdit({
-  //     title: route.params.itemTitle,
-  //     author: route.params.itemAuthor,
-  //     color: route.params.itemColor,
-  //     id: route.params.itemID,
-  //     image:  route.params.itemImage,
-  //     chapters: newChapter
-  //   });
-  // }, [route.params.books])
-  //console.log(route.params.books[route.params.itemID].chapters)
 
   return (
     <View style={styles.container}>
       <View
         style={[styles.background, { backgroundColor: route.params.itemColor }]}
       >
-        <Cover route={route} id={route.params.itemID} />
+        <Cover route={route} id={route.params.itemID} list={list} />
         <Text style={styles.title}>{route.params.itemTitle}</Text>
         <Text style={styles.author}>{route.params.itemAuthor}</Text>
         <View style={styles.entireButton}>
@@ -358,12 +283,7 @@ const AddBookScreen = ({ navigation, route }) => {
             clearBooks={() => {}}
           />
           </View>
-
-          <TouchableOpacity onPress={handleClick}>
-            <Text>Update</Text>
-          </TouchableOpacity>  
       </View>
-
 
       <ModalChapter
         isModalChapterVisible={isModalChapterVisible}
@@ -371,7 +291,6 @@ const AddBookScreen = ({ navigation, route }) => {
         title={title}
         setTitle={setTitle}
         addChapterInBook={addChapterInBook}
-        handleClick={handleClick}
       />
 
       <FlatList

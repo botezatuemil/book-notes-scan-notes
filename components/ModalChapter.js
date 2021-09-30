@@ -54,9 +54,6 @@ const ModalChapter = ({
           onPress={() => { 
             addChapterInBook();
             toggleModalChapter();
-           
-            //handleClick();
-            //handleAddchapter();
           }}
         >
           <Text style={styles.textSave}>Create</Text>
