@@ -31,11 +31,12 @@ import ModalComponent from "../components/ModalComponent";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+
 //LogBox.ignoreAllLogs();
 
 const HomeScreen = ({ navigation }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [books, setBooks] = useState([]);
+  const [books, setBooks] = useState(images);
   const [titleBook, setTitleBook] = useState("");
   const [authorBook, setAuthorBook] = useState("");
   const [color, setColor] = useState("");
@@ -43,6 +44,8 @@ const HomeScreen = ({ navigation }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [bookEdit, setBookEdit] = useState(null);
 
+  console.log(books)
+  
   const SearchBar = ({ props }) => {
     return (
       <View style={styles.search}>

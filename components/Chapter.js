@@ -16,7 +16,7 @@ import {
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 
-const Chapter = ({ item }) => {
+const Chapter = ({ item, navigation }) => {
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -27,7 +27,7 @@ const Chapter = ({ item }) => {
     return <AppLoading />;
   }
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate("WritingScreen", {title: item.name})}>
       <Text numberOfLines={1} style={styles.textInput}>
         {item.name}
       </Text>

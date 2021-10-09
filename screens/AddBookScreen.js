@@ -297,7 +297,7 @@ const AddBookScreen = ({ navigation, route }) => {
         style={styles.list}
         data={list}
         extraData={refresh}
-        renderItem={({ item }) => <Chapter item={item} />}
+        renderItem={({ item }) => <Chapter item={item} navigation={navigation} />}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
     />
