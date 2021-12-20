@@ -15,23 +15,7 @@ const Book = ({
   item,
   selectedImage,
   setSelectedImage,
-  clearBooks,
-  handleAddBook,
-  handleEditBooks,
-  handleTriggerEdit,
-  bookEdit,
-  setBookEdit,
-  books,
-  setBooks
-  //newBookEdit
 }) => {
-  // const newBookEdit = {
-  //   title: item.title,
-  //   author: item.author,
-  //   color: item.color,
-  //   id: item.id,
-  //   image: selectedImage,
-  // };
   
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
@@ -49,25 +33,16 @@ const Book = ({
         <TouchableOpacity
           onPress={() => {
             
-            handleTriggerEdit(item);
             navigation.navigate("AddBookScreen", {
               itemID: item.id,
               itemColor: item.color,
               itemTitle: item.title,
               itemAuthor: item.author,
               itemImage: item.image,
+              chapters: item.chapters,
               selectedImage: selectedImage,
               setSelectedImage: setSelectedImage,
-              clearBooks: clearBooks,
-              handleAddBook: handleAddBook,
-              handleEditBooks: handleEditBooks,
-              bookEdit: bookEdit,
-              setBookEdit: setBookEdit,
-              books: books,
-              setBooks: setBooks,
-              chapters: item.chapters
-
-            //  newBookEdit: newBookEdit,
+              
             });
           }}
         >
@@ -78,24 +53,15 @@ const Book = ({
           style={[styles.image, { backgroundColor: "#C4C4C4" }]}
           onPress={() => {
            
-            handleTriggerEdit(item);
             navigation.navigate("AddBookScreen", {
               itemID: item.id,
               itemColor: item.color,
               itemTitle: item.title,
               itemAuthor: item.author,
               itemImage: item.image,
+              chapters: item.chapters,
               selectedImage: selectedImage,
               setSelectedImage: setSelectedImage,
-              clearBooks: clearBooks,
-              handleAddBook: handleAddBook,
-              handleEditBooks: handleEditBooks,
-              bookEdit: bookEdit,
-              setBookEdit: setBookEdit,
-              books: books,
-              setBooks: setBooks,
-              chapters: item.chapters
-              //newBookEdit: newBookEdit,
             });
           }}
         ></TouchableOpacity>

@@ -13,6 +13,58 @@ import {
 } from "@expo-google-fonts/dm-sans";
 import { useNavigation } from '@react-navigation/native';
 
+import { getAuth, signInAnonymously, onAuthStateChanged  } from "firebase/auth";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import {app, db} from '../firebase';
+import firebase from 'firebase/compat';
+
+const authentificate = () => {
+  const auth = getAuth();
+  signInAnonymously(auth)
+
+  .then(() => {
+    
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ...
+  });
+}
+
+const getId = () => {
+
+  authentificate();
+
+  const auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+  
+    if (user) {
+    AsyncStorage.setItem("id", JSON.stringify(user.uid))
+    .then(() => {
+      //setUserID(currentUserId)
+    })
+    .catch((error) => console.log(error));
+
+    firebase.firestore();
+    db.collection('users')
+    .doc(user.uid)
+    .set({
+        userId: user.uid
+    })
+    .catch(function(error) {
+      console.log(error)
+    })
+  } else {
+    // User is signed out
+    // ...
+  }
+  });
+
+}
+
 
 const DoneButton = () => {
   const navigation = useNavigation();
@@ -28,7 +80,7 @@ const DoneButton = () => {
   }
 
   return (
-    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate('AppStack')}>
+    <TouchableOpacity style={styles.container} onPress={() => {navigation.navigate('AppStack'); getId()}}>
       <Text style={styles.text}>Get Started</Text>
     </TouchableOpacity>
   );

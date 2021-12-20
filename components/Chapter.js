@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
@@ -16,7 +17,12 @@ import {
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 
-const Chapter = ({ item, navigation }) => {
+const Chapter = ({ 
+  item, 
+  navigation,
+  titleBook
+
+}) => {
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -27,7 +33,15 @@ const Chapter = ({ item, navigation }) => {
     return <AppLoading />;
   }
   return (
-    <TouchableOpacity style={styles.container} onPress={() => navigation.navigate("WritingScreen", {title: item.name})}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => 
+        navigation.navigate("WritingScreen", { 
+          titleChapter: item.name,
+          idChapter: item.id,
+          titleBook: titleBook
+        })}
+    >
       <Text numberOfLines={1} style={styles.textInput}>
         {item.name}
       </Text>
@@ -57,7 +71,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     marginLeft: 16,
-    fontFamily: 'DMSans_500Medium',
-    fontSize: 12
+    fontFamily: "DMSans_500Medium",
+    fontSize: 12,
   },
 });

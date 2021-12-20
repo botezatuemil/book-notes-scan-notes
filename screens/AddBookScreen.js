@@ -19,17 +19,71 @@ import {
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 
-import Chapter from "../components/Chapter";
-//import chapters from "../utils/chapters";
+
 import ModalChapter from "../components/ModalChapter";
+import * as ImagePicker from "expo-image-picker";
+import Chapter from '../components/Chapter'
+
+import {app, db} from '../firebase';
+import firebase from 'firebase/compat';
+import 'firebase/compat/storage'
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as ImagePicker from "expo-image-picker";
-import { useIsFocused} from '@react-navigation/native'; 
-import useForceUpdate from 'use-force-update';
 
-const Cover = ({ props, route, list }) => {
+const Cover = ( {userId, titleBook} ) => {
+
   const [selectedImage, setSelectedImage] = useState();
+  
+  console.log(userId)
+  const uploadImage = async() => {
+
+    if (selectedImage == null) {
+        return null;
+    }
+    const response = await fetch(selectedImage.localUri)
+    const blob = await response.blob();
+    //var ref = app.storage().ref().child(new Date().toISOString());
+
+    var filename = new Date().toISOString();
+    const storageRef = app.storage().ref(`photos/${filename}`)
+    const task = storageRef.put(blob);
+
+    try {
+        await task;
+        const url = await storageRef.getDownloadURL();
+        setSelectedImage(null);
+        return url;
+    } catch(e) {
+        console.log(e);
+        return null;
+    }
+        
+  }
+
+  const handleUpdate = async() => {
+    let imgUrl = await uploadImage();
+
+    firebase.firestore();
+    db.collection('users')
+    .doc(userId)
+    .collection('books')
+    .doc(titleBook)
+    .update({
+        image: imgUrl,
+    })
+    .then(() => {
+        console.log('User updated!');
+        Alert.alert(
+            'Image updated!',
+            'Your profile has been successfully updated.'
+        )
+    })
+    .catch(function(error) {
+      console.log(error)
+    })
+  }
+
+  
 
   const SelectCover = ({ pickImage }) => {
     return (
@@ -44,27 +98,12 @@ const Cover = ({ props, route, list }) => {
     );
   };
 
-  const UpdateImage = ({ route }) => {
+  const UpdateImage = () => {
     return (
       <TouchableOpacity
         style={styles.addBook}
         onPress={() => {
-          route.params.handleEditBooks({
-            title: route.params.itemTitle,
-            author: route.params.itemAuthor,
-            color: route.params.itemColor,
-            id: route.params.itemID,
-            image: selectedImage,
-            chapters: list
-          });
-          route.params.setBookEdit({
-            title: route.params.itemTitle,
-            author: route.params.itemAuthor,
-            color: route.params.itemColor,
-            id: route.params.itemID,
-            image: selectedImage,
-            chapters: list
-          });
+          handleUpdate();
           setSelectedImage(null);
         }}
       >
@@ -74,7 +113,8 @@ const Cover = ({ props, route, list }) => {
   };
 
   let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    let permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
       alert("Permission to access camera roll is required!");
@@ -86,7 +126,7 @@ const Cover = ({ props, route, list }) => {
     if (pickerResult.cancelled === true) {
       return;
     }
-    setSelectedImage(pickerResult.uri);
+    setSelectedImage({ localUri: pickerResult.uri });
   };
 
   return (
@@ -98,7 +138,6 @@ const Cover = ({ props, route, list }) => {
           viewBox="0 0 44 44"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          {...props}
         >
           <Path
             d="M8.25 38.5a4.125 4.125 0 014.125-4.125H35.75V5.5H12.375A4.125 4.125 0 008.25 9.625V38.5zM8.25 38.5v1.375H33"
@@ -121,7 +160,7 @@ const Cover = ({ props, route, list }) => {
       </View>
       <SelectCover pickImage={openImagePickerAsync} />
 
-      {selectedImage != null ? <UpdateImage route={route} /> : <></>}
+      {selectedImage != null ? <UpdateImage /> : <></>}
     </View>
   );
 };
@@ -136,6 +175,7 @@ const UtilityButtons = ({ title, buttonEdit, deleteBook, clearBooks }) => {
     </TouchableOpacity>
   );
 };
+
 
 const DeleteButton = ({ props, clear }) => {
   return (
@@ -190,61 +230,92 @@ const AddChapter = ({ props, toggleModalChapter }) => {
   );
 };
 
-const AddBookScreen = ({ navigation, route }) => {
-  const [title, setTitle] = useState("");
+
+const AddBookScreen = ({navigation, route}) => {
+
+  const [titleChapter, setTitleChapter] = useState("");
   const [isModalChapterVisible, setIsModalChapterVisible] = useState(false);
   const [initialChapters, setInitialChapters] = useState([]);
   const [ready, setReady] = useState(false);
   const [refresh, setRefresh] = useState(false);
-  const forceUpdate = useForceUpdate();
-  const [list, setList] = useState(route.params.books[route.params.itemID - 1].chapters)
+  const [loading, setLoading] = useState(true);
+  const [currentUserId, setUserID] = useState();
+  const [chapters, setChapters] = useState();
+
+  const loadId = () => {
+    AsyncStorage.getItem("id")
+      .then((data) => {
+        setUserID(JSON.parse(data));
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const submitChapter = async () => {
+
+    firebase.firestore();
+    db.collection('users')
+    .doc(currentUserId)
+    .collection('books')
+    .doc((route.params.itemTitle).toString())
+    .collection('chapters')
+    .doc((titleChapter).toString())
+    .set ({
+      chapterTitle: titleChapter, 
+      content: null
+    })
+    .then(() => {
+        console.log('Chapter added!');
+        Alert.alert(
+            "Book published!",
+            "Your image was successfully uploaded to the Firebase Storage"
+        );     
+    })
+    .catch((error) => {
+        console.log('Something went wrong', error)
+    })
+  }
+
+  const fetchChapters = async() => {
+    try {
+      const list = [];
+      await firebase.firestore();
+      await db.collection('users')
+      .doc(currentUserId)
+      .collection('books')
+      .doc((route.params.itemTitle).toString())
+      .collection('chapters')
+      .get()
+      .then((querySnapshot) => {
+          querySnapshot.docs.forEach((doc) => {
+            const {chapterTitle, content} = doc.data();
+            list.push({
+              name: chapterTitle,      
+            })
+          })
+      })
   
+      setChapters(list);
+      setRefresh(true);
+  
+      if(loading) {
+        setLoading(false);
+      }
+  
+    } catch(e) {
+      console.log(e);
+    }
+  }
+  
+  useEffect(() => {
+    fetchChapters();
+    //navigation.addListener("focus", () => setLoading(!loading));
+  }, [loading, navigation])
+
+
   const toggleModalChapter = () => {
     setIsModalChapterVisible(!isModalChapterVisible);
   };
 
-  const loadChapters = () => {
-    AsyncStorage.getItem("storedBooks")
-      .then((data) => {
-        route.params.setBooks(JSON.parse(data));
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const clear = () => {
-    AsyncStorage.setItem("storedChapters", JSON.stringify([]))
-      .then(() => {
-        setInitialChapters([]);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const addChapterInBook = () => {
-   
-    const chapter = list
-    const newChapter = [
-      ...chapter,
-      {
-        name: title,
-        id: `${
-          (chapter[chapter.length - 1] &&
-            parseInt(chapter[chapter.length - 1].id) + 1) ||
-          1
-        }`,
-      },
-    ];
-    setList(newChapter)
-    setTitle(null);
-    
-    route.params.handleEditBooks({
-      title: route.params.itemTitle,
-      author: route.params.itemAuthor,
-      color: route.params.itemColor,
-      id: route.params.itemID,
-      image: route.params.itemImage,
-      chapters: newChapter
-    });
-  }
 
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
@@ -255,7 +326,7 @@ const AddBookScreen = ({ navigation, route }) => {
   if (!fontsLoaded && !ready) {
     return (
       <AppLoading
-        startAsync={loadChapters}
+        startAsync={loadId}
         onFinish={() => setReady(true)}
         onError={console.warn}
       />
@@ -265,45 +336,51 @@ const AddBookScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <View
-        style={[styles.background, { backgroundColor: route.params.itemColor }]}
+        style={[styles.background, { backgroundColor: "" }]}
       >
-        <Cover route={route} id={route.params.itemID} list={list} />
-        <Text style={styles.title}>{route.params.itemTitle}</Text>
-        <Text style={styles.author}>{route.params.itemAuthor}</Text>
+        <Cover userId={currentUserId} titleBook={route.params.itemTitle}/>
+        <Text style={styles.title}></Text>
+        <Text style={styles.author}></Text>
         <View style={styles.entireButton}>
           <UtilityButtons
             title="DELETE BOOK"
             deleteBook={styles.deleteBook}
-            clearBooks={route.params.clearBooks}
           />
           <View style={styles.separator}></View>
           <UtilityButtons
             title="EDIT"
             buttonEdit={styles.buttonEdit}
-            clearBooks={() => {}}
           />
-          </View>
+        </View>
       </View>
 
       <ModalChapter
         isModalChapterVisible={isModalChapterVisible}
         toggleModalChapter={toggleModalChapter}
-        title={title}
-        setTitle={setTitle}
-        addChapterInBook={addChapterInBook}
+        title={titleChapter}
+        setTitle={setTitleChapter}
+        submitChapter={submitChapter}
+        
       />
 
       <FlatList
         style={styles.list}
-        data={list}
-        extraData={refresh}
-        renderItem={({ item }) => <Chapter item={item} navigation={navigation} />}
+        data={chapters}
+        //extraData={refresh}
+        renderItem={({ item }) => (
+          <Chapter 
+            item={item} 
+            navigation={navigation} 
+            titleBook={route.params.itemTitle}
+                
+          />
+        )}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
-    />
-      
+      />
+
       <View style={styles.footer}>
-        <DeleteButton clear={clear} />
+        <DeleteButton/>
         <AddChapter toggleModalChapter={toggleModalChapter} />
       </View>
     </View>

@@ -20,19 +20,18 @@ import {
 import chapters from "../utils/chapters";
 
 const ModalComponent = ({
-  navigation,
   isModalVisible,
   toggleModal,
   titleModal,
   form2,
   save,
+  navigation={navigation},
   titleBook,
   setTitleBook,
   authorBook,
   setAuthorBook,
   setColor,
-  handleAddBook,
-  books
+  submitBook
 }) => {
 
   const [onFocusColor, setOnFocusColor] = useState([
@@ -78,8 +77,7 @@ const ModalComponent = ({
     let updatedState = onFocusColor.map((isOnFocusItem) => 
       isOnFocusItem.id === item.id
       ? {...isOnFocusItem, selected: true}
-      : {...isOnFocusItem, selected: false}
-      
+      : {...isOnFocusItem, selected: false} 
     )
 
     setOnFocusColor(updatedState);
@@ -164,7 +162,7 @@ const ModalComponent = ({
 
           <TouchableOpacity style={styles.save}
             onPress={() => {
-              handleAddBook();
+              submitBook();
               toggleModal();
               //console.log(books)
             }}

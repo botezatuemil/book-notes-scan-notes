@@ -25,27 +25,102 @@ import {
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 
+import {app, db} from '../firebase';
+import firebase from 'firebase/compat';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
 import Book from "../components/Book";
 import images from "../utils/images";
 import ModalComponent from "../components/ModalComponent";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
-//LogBox.ignoreAllLogs();
-
 const HomeScreen = ({ navigation }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [books, setBooks] = useState(images);
+  const [books, setBooks] = useState();
   const [titleBook, setTitleBook] = useState("");
   const [authorBook, setAuthorBook] = useState("");
   const [color, setColor] = useState("");
   const [ready, setReady] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [bookEdit, setBookEdit] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [currentUserId, setUserID] = useState();
 
-  console.log(books)
-  
+
+  const loadId = () => {
+    AsyncStorage.getItem("id")
+      .then((data) => {
+        setUserID(JSON.parse(data));
+      })
+      .catch((error) => console.log(error));
+  };
+
+
+
+  const submitBook = async () => {
+
+    firebase.firestore();
+    db.collection('users')
+    .doc(currentUserId)
+    .collection('books')
+    .doc((titleBook).toString())
+    .set ({
+      title: titleBook,
+      author: authorBook,
+      color: color,
+      image: null,
+    })
+    .then(() => {
+        console.log('Book added!');
+        Alert.alert(
+            "Book published!",
+            "Your image was successfully uploaded to the Firebase Storage"
+        );     
+    })
+    .catch((error) => {
+        console.log('Something went wrong', error)
+    })
+}
+
+const fetchPosts = async() => {
+  try {
+    const list = [];
+    await firebase.firestore();
+    await db.collection('users')
+    .doc(currentUserId)
+    .collection('books')
+    .get()
+    .then((querySnapshot) => {
+        querySnapshot.docs.forEach((doc) => {
+          const {title, author, color, image, chapters} = doc.data();
+          list.push({
+            title,
+            author,
+            color,
+            image,
+            chapters
+        })
+        })
+    })
+
+    setBooks(list);
+
+    if(loading) {
+      setLoading(false);
+    }
+
+  } catch(e) {
+    console.log(e);
+  }
+}
+
+useEffect(() => {
+  fetchPosts();
+  navigation.addListener("focus", () => setLoading(!loading));
+}, [loading, navigation])
+
+
   const SearchBar = ({ props }) => {
     return (
       <View style={styles.search}>
@@ -104,7 +179,7 @@ const HomeScreen = ({ navigation }) => {
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            <Rect x={21} y={15} width={3} height={13} rx={1.5} fill="#000" />
+            <Rect x={21} y={15} width={3} height={13} rx={1.5} fill="#000"/>
             <Rect
               x={29}
               y={20}
@@ -128,67 +203,6 @@ const HomeScreen = ({ navigation }) => {
     );
   };
 
-  const handleAddBook = () => {
-    const newBook = [
-      ...books,
-      {
-        title: titleBook,
-        author: authorBook,
-        color: color,
-        id: `${
-          (books[books.length - 1] &&
-            parseInt(books[books.length - 1].id) + 1) ||
-          1
-        }`,
-        image: null,
-        chapters: [
-        ]
-      },
-    ];
-    AsyncStorage.setItem("storedBooks", JSON.stringify(newBook))
-      .then(() => {
-        setBooks(newBook);
-        setTitleBook("");
-        setAuthorBook("");
-        setSelectedImage(null);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  
-  const loadBooks = () => {
-    AsyncStorage.getItem("storedBooks")
-      .then((data) => {
-        setBooks(JSON.parse(data));
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const clearBooks = () => {
-    AsyncStorage.setItem("storedBooks", JSON.stringify([]))
-      .then(() => {
-        setBooks([]);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const handleTriggerEdit = (item) => {};
-
-  const handleEditBooks = async(item) => {
-    const newBook = [...books];
-
-    const bookIndex = books.findIndex((book) => book.id === item.id);
-    newBook.splice(bookIndex, 1, item);
-
-    AsyncStorage.setItem("storedBooks", JSON.stringify(newBook))
-      .then(() => {
-        setBooks(newBook);
-        //setBookEdit(null);
-        setSelectedImage(null);
-      })
-      .catch((error) => console.log(error));
-  };
-
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
     DMSans_500Medium,
@@ -198,7 +212,7 @@ const HomeScreen = ({ navigation }) => {
   if (!fontsLoaded && !ready) {
     return (
       <AppLoading
-        startAsync={loadBooks}
+        startAsync={loadId}
         onFinish={() => setReady(true)}
         onError={console.warn}
       />
@@ -238,14 +252,7 @@ const HomeScreen = ({ navigation }) => {
                 navigation={navigation}
                 selectedImage={selectedImage}
                 setSelectedImage={setSelectedImage}
-                clearBooks={clearBooks}
-                handleAddBook={handleAddBook}
-                handleEditBooks={handleEditBooks}
-                handleTriggerEdit={handleTriggerEdit}
-                bookEdit={bookEdit}
-                setBookEdit={setBookEdit}
-                books={books}
-                setBooks={setBooks}
+
               />
             )}
             keyExtractor={(item) => item.id}
@@ -269,8 +276,7 @@ const HomeScreen = ({ navigation }) => {
         authorBook={authorBook}
         setAuthorBook={setAuthorBook}
         setColor={setColor}
-        handleAddBook={handleAddBook}
-        
+        submitBook={submitBook}
       />
     </ScrollView>
   );

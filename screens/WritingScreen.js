@@ -1,5 +1,7 @@
-import React, {useState} from "react";
+import React, { useState, useEffect } from "react";
 import {
+  KeyboardAvoidingView,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -8,7 +10,6 @@ import {
 } from "react-native";
 
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
-
 import AppLoading from "expo-app-loading";
 import { useFonts } from "expo-font";
 import {
@@ -17,18 +18,27 @@ import {
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Svg, { Path } from "react-native-svg";
 
-const Header = ({ isEditing, setIsEditing, }) => {
+import {app, db} from '../firebase';
+import firebase from 'firebase/compat';
+import 'firebase/compat/storage'
+
+
+
+const Header = ({ isEditing, setIsEditing }) => {
   return (
     <View>
-      <TouchableOpacity style={styles.editMode} onPress={() => setIsEditing(!isEditing)}>
+      <TouchableOpacity
+        style={styles.editMode}
+        onPress={() => setIsEditing(!isEditing)}
+      >
         <Svg
           width={21}
           height={21}
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-         
         >
           <Path
             d="M10.5 13.125H7.875V10.5l7.875-7.875 2.625 2.625-7.875 7.875zM13.781 4.594l2.625 2.625"
@@ -47,13 +57,15 @@ const Header = ({ isEditing, setIsEditing, }) => {
         </Svg>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.search}>
+      <TouchableOpacity style={styles.search}
+        onPress={() => {
+        }}
+      >
         <Svg
           width={15}
           height={15}
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-
         >
           <Path
             fillRule="evenodd"
@@ -81,35 +93,117 @@ const Header = ({ isEditing, setIsEditing, }) => {
   );
 };
 
-const TextComponent = ({ title, isEditing, setIsEditing, text, setText }) => {
+const TextComponent = ({ title, isEditing, setIsEditing, setContent, content, handleUpdate }) => {
   return (
-    <View>
+    
+    <ScrollView    
+      contentContainerStyle={{ flexGrow: 1 }}
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
+      style={{top: verticalScale(30)}}
+    >
+      
       <Text style={styles.title}>{title}</Text>
-      {
-        isEditing ? (
-          <TextInput 
-            placeholder="Write your text..."
-            placeholderTextColor="#000"
-            multiline={true}
-            style={styles.textInput}
-            value={text}
-            onChangeText={(txt) => setText(txt)}
-            //onSubmitEditing={() => setIsEditing(false)}
-          />
-        ) : (
-          <Text style={styles.notes} onPress={() => setIsEditing(true)}>
-            {text}
-          </Text>
-        )
-      }
-    </View>
+      {isEditing ? (
+        <TextInput
+          placeholder="Write your text..."
+          placeholderTextColor="#000"
+          multiline={true}
+          style={styles.textInput}
+          value={content}
+          onChangeText={(txt) => setContent(txt)}
+          onSubmitEditing={() => handleUpdate()}
+        />
+      ) : (
+        <Text style={styles.notes} onPress={() => setIsEditing(true)}>
+          {content}
+        </Text>
+      )}
+       
+    </ScrollView>
+    
   );
 };
 
-const WritingScreen = ({ route }) => {
 
-  const [isEditing, setIsEditing] = useState(false);
+
+const WritingScreen = ({ route, navigation }) => {
+  const [isEditing, setIsEditing] = useState(true);
+  const [refresh, setRefresh] = useState(false);
   const [text, setText] = useState("");
+  const [ready, setReady] = useState(false);
+  const [currentUserId, setUserID] = useState();
+  const [content, setContent] = useState();
+  const [loading, setLoading] = useState(true);
+
+  const loadId = () => {
+    AsyncStorage.getItem("id")
+      .then((data) => {
+        setUserID(JSON.parse(data));
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const handleUpdate = async() => {
+   
+    firebase.firestore();
+    db.collection('users')
+    .doc(currentUserId)
+    .collection('books')
+    .doc((route.params.titleBook).toString())
+    .collection('chapters')
+    .doc((route.params.titleChapter).toString())
+    .update({
+        content: content,
+    })
+    .then(() => {
+        console.log('User updated!');
+        Alert.alert(
+            'Image updated!',
+            'Your profile has been successfully updated.'
+        )
+    })
+    .catch(function(error) {
+      console.log(error)
+    })
+  }
+
+  const fetchContent = async() => {
+    try {
+      const list = [];
+      await firebase.firestore();
+      await db.collection('users')
+      .doc(currentUserId)
+      .collection('books')
+      .doc((route.params.titleBook).toString())
+      .collection('chapters')
+      .get()
+      .then((querySnapshot) => {
+          querySnapshot.docs.forEach((doc) => {
+            if (doc.id === route.params.titleChapter) {
+                 const {content} = doc.data();
+                 setContent(content)
+            }
+          })
+      })
+  
+
+      setRefresh(true);
+  
+      if(loading) {
+        setLoading(false);
+      }
+  
+    } catch(e) {
+      console.log(e);
+    }
+  }
+
+  
+  useEffect(() => {
+    fetchContent();
+  }, [loading, navigation])
+
 
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
@@ -117,23 +211,27 @@ const WritingScreen = ({ route }) => {
     DMSans_700Bold,
   });
 
-  if (!fontsLoaded) {
-    return <AppLoading />;
+  if (!fontsLoaded  && !ready) {
+    return <AppLoading 
+    startAsync={loadId}
+    onFinish={() => setReady(true)}
+    onError={console.warn}
+    />
   }
 
   return (
     <View style={styles.container}>
-      <Header 
-        isEditing={isEditing}
-        setIsEditing={setIsEditing}
-      />
-      <TextComponent 
-        title={route.params.title} 
-        isEditing={isEditing}
-        setIsEditing={setIsEditing}
-        text={text} 
-        setText={setText} 
-      />
+      <Header isEditing={isEditing} setIsEditing={setIsEditing} handleUpdate={handleUpdate} />
+
+        <TextComponent
+          title={route.params.titleChapter}
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
+          setContent={setContent}
+          content={content}
+          handleUpdate={handleUpdate}
+        />
+      
     </View>
   );
 };
@@ -166,17 +264,17 @@ const styles = StyleSheet.create({
     marginLeft: 350,
   },
   notes: {
-    color: '#000',
+    color: "#000",
     top: verticalScale(96),
     marginLeft: 36,
     marginRight: 36,
-    fontFamily:'DMSans_500Medium'
+    fontFamily: "DMSans_500Medium",
   },
   textInput: {
     top: verticalScale(96),
-    color: '#000',
+    color: "#000",
     marginLeft: 36,
     marginRight: 36,
-    fontFamily:'DMSans_500Medium'
-  }
+    fontFamily: "DMSans_500Medium",
+  },
 });
