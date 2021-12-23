@@ -84,7 +84,6 @@ const ModalComponent = ({
 
     updatedState.map((isOnFocusItem) => {
       if(isOnFocusItem.selected === true) {
-        console.log(isOnFocusItem.color)
         setColor(isOnFocusItem.color)
       }
     })

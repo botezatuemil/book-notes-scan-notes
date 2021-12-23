@@ -21,13 +21,15 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Svg, { Path } from "react-native-svg";
 
-import {app, db} from '../firebase';
-import firebase from 'firebase/compat';
-import 'firebase/compat/storage'
+import { app, db } from "../firebase";
+import firebase from "firebase/compat";
+import "firebase/compat/storage";
 
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
+import ModalColor from "../components/ModalColor";
 
-const Header = ({ isEditing, setIsEditing }) => {
+const Header = ({ isEditing, setIsEditing, handleUpdate }) => {
   return (
     <View>
       <TouchableOpacity
@@ -57,10 +59,7 @@ const Header = ({ isEditing, setIsEditing }) => {
         </Svg>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.search}
-        onPress={() => {
-        }}
-      >
+      <TouchableOpacity style={styles.search} onPress={() => {}}>
         <Svg
           width={15}
           height={15}
@@ -76,7 +75,7 @@ const Header = ({ isEditing, setIsEditing }) => {
         </Svg>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuDots}>
+      <TouchableOpacity style={styles.menuDots} onPress={handleUpdate}>
         <Svg
           width={24}
           height={24}
@@ -93,39 +92,161 @@ const Header = ({ isEditing, setIsEditing }) => {
   );
 };
 
-const TextComponent = ({ title, isEditing, setIsEditing, setContent, content, handleUpdate }) => {
+const TextComponent = ({
+  title,
+  isEditing,
+  setIsEditing,
+  setContent,
+  content,
+  handleUpdate,
+  color,
+  setColor
+}) => {
   return (
-    
-    <ScrollView    
-      contentContainerStyle={{ flexGrow: 1 }}
-      keyboardShouldPersistTaps="handled"
-      keyboardDismissMode="on-drag"
-      style={{top: verticalScale(30)}}
-    >
-      
-      <Text style={styles.title}>{title}</Text>
-      {isEditing ? (
-        <TextInput
-          placeholder="Write your text..."
-          placeholderTextColor="#000"
-          multiline={true}
-          style={styles.textInput}
-          value={content}
-          onChangeText={(txt) => setContent(txt)}
-          onSubmitEditing={() => handleUpdate()}
-        />
-      ) : (
-        <Text style={styles.notes} onPress={() => setIsEditing(true)}>
-          {content}
-        </Text>
-      )}
-       
-    </ScrollView>
-    
+    <View style={{ flex: 1, paddingTop: verticalScale(60) }}>
+      <KeyboardAwareScrollView
+        //contentContainerStyle={{ flex: 1 }}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: verticalScale(80),
+        }}
+      >
+        <Text style={styles.title}>{title}</Text>
+        {isEditing ? (
+          <TextInput
+            placeholder="Write your text..."
+            placeholderTextColor="#000"
+            multiline={true}
+            style={styles.textInput}
+            value={content}
+            onChangeText={(txt) => setContent(txt)}
+            onSubmitEditing={() => handleUpdate()}
+            selectable={true} 
+            
+          />
+        ) : (
+          <Text 
+            style={styles.notes} 
+            onPress={() => setIsEditing(true)}
+            selectable={true}
+              
+          >
+            {content}
+          </Text>
+        )}
+      </KeyboardAwareScrollView>
+    </View>
   );
 };
 
 
+
+const ActionButtons = ({color, setColor}) => {
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
+  };
+
+  return (
+    <>
+    <ModalColor
+      isModalVisible={isModalVisible}
+      color={color}
+      setColor={setColor}
+    />
+    <View style={styles.actions}>
+      <TouchableOpacity style={styles.textSize} onPress={toggleModal}>
+        <Svg
+          width={18}
+          height={18}
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <Path
+            d="M9 3.937v10.125M3.375 6.187v-2.25h11.25v2.25M6.75 14.062h4.5"
+            stroke="#fff"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.textColor} onPress={toggleModal}>
+        <Svg
+          width={19}
+          height={19}
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <Path d="M0 15.833h19V19H0v-3.167Z" fill="#fff" fillOpacity={0.36} />
+          <Path
+            d="M8.708 2.375 4.354 13.458h1.782l.886-2.375h4.948l.887 2.375h1.781L10.292 2.375H8.708ZM7.616 9.5 9.5 4.489 11.384 9.5H7.616Z"
+            fill="#fff"
+          />
+        </Svg>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.textAlign}>
+        <Svg
+          width={19}
+          height={19}
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <Path
+            d="M2.375 16.625h14.25v-1.583H2.375v1.583Zm0-3.167h14.25v-1.583H2.375v1.583Zm0-3.166h14.25V8.708H2.375v1.584Zm0-3.167h14.25V5.542H2.375v1.583Zm0-4.75v1.583h14.25V2.375H2.375Z"
+            fill="#fff"
+          />
+        </Svg>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.attach}>
+        <Svg
+          width={19}
+          height={19}
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <Path
+            d="M13.063 4.75v9.104a3.166 3.166 0 1 1-6.334 0V3.958a1.98 1.98 0 0 1 3.959 0v8.313a.794.794 0 0 1-.792.791.794.794 0 0 1-.792-.791V4.75H7.917v7.52a1.98 1.98 0 0 0 3.958 0V3.959a3.166 3.166 0 1 0-6.333 0v9.896a4.352 4.352 0 0 0 4.354 4.354 4.352 4.352 0 0 0 4.354-4.354V4.75h-1.187Z"
+            fill="#fff"
+          />
+        </Svg>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.camera}>
+        <Svg
+          width={19}
+          height={19}
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <Path
+            d="M15.438 15.438H3.562a1.187 1.187 0 0 1-1.187-1.188V5.937A1.188 1.188 0 0 1 3.563 4.75h2.374l1.188-1.781h4.75l1.187 1.781h2.376a1.188 1.188 0 0 1 1.187 1.188v8.312a1.188 1.188 0 0 1-1.188 1.188Z"
+            stroke="#fff"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <Path
+            d="M9.5 12.469a2.672 2.672 0 1 0 0-5.344 2.672 2.672 0 0 0 0 5.344Z"
+            stroke="#fff"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+      </TouchableOpacity>
+    </View>
+
+    </>
+  );
+};
 
 const WritingScreen = ({ route, navigation }) => {
   const [isEditing, setIsEditing] = useState(true);
@@ -135,6 +256,7 @@ const WritingScreen = ({ route, navigation }) => {
   const [currentUserId, setUserID] = useState();
   const [content, setContent] = useState();
   const [loading, setLoading] = useState(true);
+  const [color, setColor] = useState("");
 
   const loadId = () => {
     AsyncStorage.getItem("id")
@@ -144,66 +266,62 @@ const WritingScreen = ({ route, navigation }) => {
       .catch((error) => console.log(error));
   };
 
-  const handleUpdate = async() => {
-   
+  const handleUpdate = async () => {
     firebase.firestore();
-    db.collection('users')
-    .doc(currentUserId)
-    .collection('books')
-    .doc((route.params.titleBook).toString())
-    .collection('chapters')
-    .doc((route.params.titleChapter).toString())
-    .update({
+    db.collection("users")
+      .doc(currentUserId)
+      .collection("books")
+      .doc(route.params.titleBook.toString())
+      .collection("chapters")
+      .doc(route.params.titleChapter.toString())
+      .update({
         content: content,
-    })
-    .then(() => {
-        console.log('User updated!');
+      })
+      .then(() => {
+        console.log("User updated!");
         Alert.alert(
-            'Image updated!',
-            'Your profile has been successfully updated.'
-        )
-    })
-    .catch(function(error) {
-      console.log(error)
-    })
-  }
+          "Image updated!",
+          "Your profile has been successfully updated."
+        );
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
 
-  const fetchContent = async() => {
+  const fetchContent = async () => {
     try {
       const list = [];
       await firebase.firestore();
-      await db.collection('users')
-      .doc(currentUserId)
-      .collection('books')
-      .doc((route.params.titleBook).toString())
-      .collection('chapters')
-      .get()
-      .then((querySnapshot) => {
+      await db
+        .collection("users")
+        .doc(currentUserId)
+        .collection("books")
+        .doc(route.params.titleBook.toString())
+        .collection("chapters")
+        .get()
+        .then((querySnapshot) => {
           querySnapshot.docs.forEach((doc) => {
             if (doc.id === route.params.titleChapter) {
-                 const {content} = doc.data();
-                 setContent(content)
+              const { content } = doc.data();
+              setContent(content);
             }
-          })
-      })
-  
+          });
+        });
 
       setRefresh(true);
-  
-      if(loading) {
+
+      if (loading) {
         setLoading(false);
       }
-  
-    } catch(e) {
+    } catch (e) {
       console.log(e);
     }
-  }
+  };
 
-  
   useEffect(() => {
     fetchContent();
-  }, [loading, navigation])
-
+  }, [loading, navigation]);
 
   let [fontsLoaded, error] = useFonts({
     DMSans_400Regular,
@@ -211,27 +329,36 @@ const WritingScreen = ({ route, navigation }) => {
     DMSans_700Bold,
   });
 
-  if (!fontsLoaded  && !ready) {
-    return <AppLoading 
-    startAsync={loadId}
-    onFinish={() => setReady(true)}
-    onError={console.warn}
-    />
+  if (!fontsLoaded && !ready) {
+    return (
+      <AppLoading
+        startAsync={loadId}
+        onFinish={() => setReady(true)}
+        onError={console.warn}
+      />
+    );
   }
 
   return (
     <View style={styles.container}>
-      <Header isEditing={isEditing} setIsEditing={setIsEditing} handleUpdate={handleUpdate} />
+      <Header
+        isEditing={isEditing}
+        setIsEditing={setIsEditing}
+        handleUpdate={handleUpdate}
+      />
 
-        <TextComponent
-          title={route.params.titleChapter}
-          isEditing={isEditing}
-          setIsEditing={setIsEditing}
-          setContent={setContent}
-          content={content}
-          handleUpdate={handleUpdate}
-        />
-      
+      <TextComponent
+        title={route.params.titleChapter}
+        isEditing={isEditing}
+        setIsEditing={setIsEditing}
+        setContent={setContent}
+        content={content}
+        handleUpdate={handleUpdate}
+        color={color}
+        setColor={setColor}
+      />
+
+      <ActionButtons color={color} setColor={setColor}/>
     </View>
   );
 };
@@ -247,9 +374,9 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontFamily: "DMSans_700Bold",
     color: "#000",
-    top: 100,
+    //top: 100,
     marginLeft: 36,
-    top: verticalScale(40),
+    //top: verticalScale(10),
   },
   editMode: {
     top: verticalScale(45),
@@ -265,16 +392,48 @@ const styles = StyleSheet.create({
   },
   notes: {
     color: "#000",
-    top: verticalScale(96),
+    paddingTop: verticalScale(36),
     marginLeft: 36,
     marginRight: 36,
     fontFamily: "DMSans_500Medium",
   },
   textInput: {
-    top: verticalScale(96),
+    paddingTop: verticalScale(36),
     color: "#000",
     marginLeft: 36,
     marginRight: 36,
     fontFamily: "DMSans_500Medium",
   },
+  actions: {
+    position: "absolute",
+    width: scale(206),
+    height: verticalScale(36),
+    alignSelf: "center",
+    backgroundColor: "#282536",
+    top: verticalScale(640),
+    borderRadius: 23,
+    justifyContent: "center",
+
+    //marginBottom: 36
+  },
+  textColor: {
+    position: "absolute",
+    marginLeft: scale(56),
+  },
+  textSize: {
+    position: "absolute",
+    marginLeft: scale(24),
+  },
+  textAlign: {
+    position: "absolute",
+    marginLeft: scale(90),
+  },
+  attach: {
+    position: "absolute",
+    marginLeft: scale(128),
+  },
+  camera: {
+    position: "absolute",
+    marginLeft: scale(163),
+  }
 });
