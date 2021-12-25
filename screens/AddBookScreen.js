@@ -124,7 +124,6 @@ const Cover = ( {userId, titleBook} ) => {
     let pickerResult = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
-        aspect: [4, 3],
         quality: 1,
     });
 
@@ -341,11 +340,11 @@ const AddBookScreen = ({navigation, route}) => {
   return (
     <View style={styles.container}>
       <View
-        style={[styles.background, { backgroundColor: "" }]}
+        style={[styles.background, { backgroundColor: route.params.itemColor }]}
       >
         <Cover userId={currentUserId} titleBook={route.params.itemTitle}/>
-        <Text style={styles.title}></Text>
-        <Text style={styles.author}></Text>
+        <Text style={styles.title}>{route.params.itemTitle}</Text>
+        <Text style={styles.author}>{route.params.itemAuthor}</Text>
         <View style={styles.entireButton}>
           <UtilityButtons
             title="DELETE BOOK"
@@ -439,7 +438,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     alignSelf: "center",
     top: 120,
-    color: "#fff",
+    color: 'rgba(255, 255, 255, 0.8)'
   },
   entireButton: {
     flexDirection: "row",
@@ -527,7 +526,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     justifyContent: "center",
     alignSelf: "center",
-    padding: 12,
+    width: scale(67),
   },
   addBookText: {
     fontSize: 8,

@@ -56,8 +56,6 @@ const HomeScreen = ({ navigation }) => {
       .catch((error) => console.log(error));
   };
 
-
-
   const submitBook = async () => {
 
     firebase.firestore();
@@ -160,7 +158,7 @@ useEffect(() => {
     setIsModalVisible(!isModalVisible);
   };
 
-  const AddBookButton = ({ props }) => {
+  const AddBookButton = () => {
     return (
       <View style={styles.book}>
         <View style={styles.bookIcon}>
@@ -170,7 +168,6 @@ useEffect(() => {
             viewBox="0 0 44 44"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            {...props}
           >
             <Path
               d="M8.25 38.5a4.125 4.125 0 014.125-4.125H35.75V5.5H12.375A4.125 4.125 0 008.25 9.625V38.5zM8.25 38.5v1.375H33"
@@ -191,13 +188,14 @@ useEffect(() => {
             />
           </Svg>
         </View>
+        
         <TouchableOpacity
-          style={[styles.addBook, { top: 41 }]}
+          style={styles.addBook}
           onPress={() => {
             toggleModal();
           }}
         >
-          <Text style={styles.addBookText}>Select Cover</Text>
+         <Text style={styles.addBookText}>ADD BOOK</Text>
         </TouchableOpacity>
       </View>
     );
@@ -252,7 +250,7 @@ useEffect(() => {
                 navigation={navigation}
                 selectedImage={selectedImage}
                 setSelectedImage={setSelectedImage}
-
+                
               />
             )}
             keyExtractor={(item) => item.id}
@@ -352,10 +350,10 @@ const styles = StyleSheet.create({
     top: 45,
     backgroundColor: "#282536",
     height: verticalScale(20),
+    width: scale(67),
     borderRadius: 3,
     justifyContent: "center",
     alignSelf: "center",
-    padding: 12,
   },
   addBookText: {
     fontSize: 8,
