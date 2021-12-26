@@ -34,7 +34,6 @@ const Cover = ( {userId, titleBook} ) => {
 
   const [selectedImage, setSelectedImage] = useState();
   
-  console.log(userId)
   const uploadImage = async() => {
 
     if (selectedImage == null) {

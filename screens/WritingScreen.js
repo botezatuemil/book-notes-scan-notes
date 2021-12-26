@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Clipboard
 } from "react-native";
 
 import { scale, verticalScale, moderateScale } from "react-native-size-matters";
@@ -27,6 +28,9 @@ import "firebase/compat/storage";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from 'expo-file-system';
+
+
 //import ImagePicker from "react-native-image-crop-picker";
 
 import ModalColor from "../components/ModalColor";
@@ -145,6 +149,26 @@ const ActionButtons = ({ color, setColor }) => {
   const [selectedImage, setSelectedImage] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const insertData = async (base64) => {
+
+    fetch('http://192.168.2.106:3000/post', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({ocrImage : base64})
+    })
+    .then(resp => resp.json()) 
+    .then(data => {
+    
+      console.log(data["ocrString"])
+      Clipboard.setString(data["ocrString"])
+      
+    })
+    .catch(error => console.log(error))
+  
+  }
 
   const recognizeFromCamera = async (options = defaultPickerOptions) => {
     try {
@@ -164,8 +188,13 @@ const ActionButtons = ({ color, setColor }) => {
       }
 
       setSelectedImage({ localUri: pickerResult.uri });
-      console.log(selectedImage)
-      //await recognizeTextFromImage(selectedImage.localUri);
+
+      const base64 = await FileSystem.readAsStringAsync(pickerResult.uri, { encoding: 'base64' });
+      await insertData(base64);
+     
+     
+      //console.log(base64)
+    
     } catch (err) {
       if (err.message !== "User cancelled image selection") {
         console.error(err);
